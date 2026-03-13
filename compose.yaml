@@ -33,7 +33,9 @@ services:
     depends_on:
       - mongodb
     environment:
-      DB_HOST: mongodb://${DB_USER}:${DB_PASSWORD}@mongo:27017/
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST:-mongo:27017}  # Use docker image if not set
     command: bash -c "npm i && npx nodemon -L src/server.ts"
     ports:
       - 8000:8000
