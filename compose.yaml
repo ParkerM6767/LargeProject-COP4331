@@ -1,0 +1,56 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker Compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+services:
+  frontend:
+    image: node:lts
+    volumes:
+      - type: bind
+        source: ./frontend
+        target: /import/frontend
+    working_dir: /import/frontend
+    depends_on:
+      - backend
+    environment:
+      VITE_API_BASE: ${VITE_API_BASE}
+    command: bash -c "npm i && npm run dev"
+    ports:
+      - 5173:5173
+
+  backend:
+    image: node:lts
+    volumes:
+      - type: bind
+        source: ./backend
+        target: /import/backend
+    working_dir: /import/backend
+    depends_on:
+      - mongodb
+    environment:
+      DB_HOST: mongodb://${DB_USER}:${DB_PASSWORD}@mongo:27017/
+    command: bash -c "npm i && npx nodemon -L src/server.ts"
+    ports:
+      - 8000:8000
+
+  mongodb:
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      # Set credentials for the root user (optional, but recommended)
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      # Persist data in a named volume
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
+    driver: local
