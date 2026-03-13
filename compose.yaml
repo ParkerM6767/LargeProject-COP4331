@@ -15,9 +15,10 @@ services:
         source: ./frontend
         target: /import/frontend
     working_dir: /import/frontend
+    depends_on:
+      - backend
     environment:
-      - VITE_API_BASE=${VITE_API_BASE}
-      - AAA=AAA
+      VITE_API_BASE: ${VITE_API_BASE}
     command: bash -c "npm i && npm run dev"
     ports:
       - 5173:5173
@@ -29,6 +30,27 @@ services:
         source: ./backend
         target: /import/backend
     working_dir: /import/backend
+    depends_on:
+      - mongodb
+    environment:
+      DB_HOST: mongodb://${DB_USER}:${DB_PASSWORD}@mongo:27017/
     command: bash -c "npm i && npx nodemon -L src/server.ts"
     ports:
-      - 5000:5000
+      - 8000:8000
+
+  mongodb:
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      # Set credentials for the root user (optional, but recommended)
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      # Persist data in a named volume
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
+    driver: local
