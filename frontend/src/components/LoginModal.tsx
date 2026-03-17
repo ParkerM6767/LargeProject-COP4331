@@ -2,7 +2,15 @@ import { useState } from "react"
 import type { LoginForm, SignupForm } from "../types";
 import { login, signup } from "../lib/fetch";
 
-export function LoginModal() {
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onLoginSuccess: () => void;
+}
+
+export function LoginModal({ isOpen, onClose, onLoginSuccess }: ModalProps) {
+    if (!isOpen) return null;
+
     const [loggingIn, setLoggingIn] = useState<boolean>(true);
 
     const [firstName, setFirstName] = useState<string>("")
@@ -36,34 +44,37 @@ export function LoginModal() {
             } else {
                 signup(signupPayload(firstName, lastName, email, password))
             }
+            onLoginSuccess();
         } catch(error) {
             console.error("Error:", error);
         }
     }
 
     return (
-        <div className="w-[15vw] h-auto p-5 bg-white text-black grid gap-4">
-            <header className="text-xl font-semibold">{loggingIn === true ? "Login" : "Sign Up"}</header>
-            <form className="grid gap-4">
-                {loggingIn === false && 
-                <>
-                    <input value={firstName} onChange={(e) => setFirstName(e.target.value)} type="text" placeholder="First Name" />
-                    <input value={lastName} onChange={(e) => setLastName(e.target.value)} type="text" placeholder="Last Name" />
-                </>
-                }
-                <input value={email} onChange={(e) => setEmail(e.target.value)} type="text" placeholder="UCF Email" />
-                <input value={password} onChange={(e) => setPassword(e.target.value)} type="text" placeholder="Password" />
-                {loggingIn === false && 
-                <>
-                    <input value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} type="text" placeholder="Confirm Password" />
-                    {password !== confirmPassword && <div>Passwords Don't match</div>}
-                </>
-                }
-            </form>
-            <footer>
-                <button onClick={() => setLoggingIn(!loggingIn)}>{loggingIn === true ? "Sign Up" : "Login"}</button>
-                <button onClick={submitForm}>{loggingIn === true ? "Login" : "Sign Up"}</button>
-            </footer>
+        <div onClick={onClose} className="fixed inset-0 bg-black/50 flex items-center justify-center">
+            <div onClick={(e) => e.stopPropagation()} className="w-[25vw] h-auto p-5 bg-white text-black grid gap-4 rounded">
+                <header className="text-xl font-semibold">{loggingIn === true ? "Login" : "Sign Up"}</header>
+                <form className="grid gap-8">
+                    {loggingIn === false && 
+                    <>
+                        <input className="border h-[4vh] rounded p-2" value={firstName} onChange={(e) => setFirstName(e.target.value)} type="text" placeholder="First Name" />
+                        <input className="border h-[4vh] rounded p-2" value={lastName} onChange={(e) => setLastName(e.target.value)} type="text" placeholder="Last Name" />
+                    </>
+                    }
+                    <input className="border h-[4vh] rounded p-2" value={email} onChange={(e) => setEmail(e.target.value)} type="text" placeholder="UCF Email" />
+                    <input className="border h-[4vh] rounded p-2" value={password} onChange={(e) => setPassword(e.target.value)} type="text" placeholder="Password" />
+                    {loggingIn === false && 
+                    <>
+                        <input className="border h-[4vh] rounded p-2" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} type="text" placeholder="Confirm Password" />
+                        {password !== confirmPassword && <div>Passwords Don't match</div>}
+                    </>
+                    }
+                </form>
+                <footer className="flex justify-around">
+                    <p className="content-center underline text-blue-500" onClick={() => setLoggingIn(!loggingIn)}>{loggingIn === true ? "Create an Account" : "Login"}</p>
+                    <button className="bg-orange-500! text-white" onClick={submitForm}>{loggingIn === true ? "Login" : "Sign Up"}</button>
+                </footer>
+            </div>   
         </div>
     )
 }
