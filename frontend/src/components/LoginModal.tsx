@@ -1,4 +1,6 @@
 import { useState } from "react"
+import type { LoginForm, SignupForm } from "../types";
+import { login, signup } from "../lib/fetch";
 
 export function LoginModal() {
     const [loggingIn, setLoggingIn] = useState<boolean>(true);
@@ -8,15 +10,6 @@ export function LoginModal() {
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
     const [confirmPassword, setConfirmPassword] = useState<string>("")
-
-    interface LoginForm {
-        email: string,
-        password:string
-    }
-    interface SignupForm extends LoginForm{
-        firstName: string,
-        lastName: string
-    }
 
     function signupPayload(firstName: string, lastName: string, email: string, password: string): SignupForm {
         const payload = {
@@ -37,10 +30,14 @@ export function LoginModal() {
     }
 
     function submitForm() {
-        if(loggingIn === true) {
-            console.log(loginPayload(email, password))
-        } else {
-            console.log(signupPayload(firstName, lastName, email, password))
+        try {
+            if(loggingIn === true) {
+                login(loginPayload(email, password))
+            } else {
+                signup(signupPayload(firstName, lastName, email, password))
+            }
+        } catch(error) {
+            console.error("Error:", error);
         }
     }
 
