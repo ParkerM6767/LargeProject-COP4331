@@ -27,10 +27,6 @@ app.use((req, res, next) => {
   next();
 });
 
-const db = client.db("school");
-const result = await db.collection("students").find({}).toArray();
-console.log(result)
-
 app.get("/api/hello", async (req, res) => {
   res.status(200).send("Hello World");
 });
