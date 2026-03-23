@@ -1,13 +1,17 @@
+// Main libraries
 import express from "express";
 import cors from "cors";
-import bodyParser from "body-parser";
+import { client } from "./db";
 
+// Express setup/dependencies
 const app = express();
-
 app.use(cors());
-// app.use(bodyParser);
-app.use(bodyParser.urlencoded());
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+
+// Main routers
+import postrouter from "./routes/postRoutes";
+app.use("/api/posts", postrouter);
 
 // Disables CORS issues
 app.use((req, res, next) => {
@@ -22,6 +26,10 @@ app.use((req, res, next) => {
   );
   next();
 });
+
+const db = client.db("school");
+const result = await db.collection("students").find({}).toArray();
+console.log(result)
 
 app.get("/api/hello", async (req, res) => {
   res.status(200).send("Hello World");
