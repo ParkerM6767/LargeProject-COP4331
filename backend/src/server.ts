@@ -12,6 +12,8 @@ app.use(express.urlencoded({extended: true}));
 // Main routers
 import postrouter from "./routes/postRoutes";
 app.use("/api/posts", postrouter);
+import userrouter from "./routes/userRoutes";
+app.use("/api/users", userrouter);
 
 // Disables CORS issues
 app.use((req, res, next) => {
