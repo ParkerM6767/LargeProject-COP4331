@@ -34,6 +34,7 @@ services:
       - mongodb
     environment:
       DB_HOST: mongodb://${DB_USER}:${DB_PASSWORD}@mongodb:27017/
+      JWT_SECRET: ${JWT_SECRET}
     command: bash -c "npm i && npx nodemon -L --exec tsx src/server.ts"
     ports:
       - 8000:8000
