@@ -1,7 +1,7 @@
 // Main libraries
 import express from "express";
 import cors from "cors";
-import { client } from "./db";
+import { connectDB } from "./db";
 
 // Express setup/dependencies
 const app = express();
@@ -33,5 +33,8 @@ app.get("/api/hello", async (req, res) => {
   res.status(200).send("Hello World");
 });
 
+
+//Start DB Connection
+connectDB();
 console.log("Starting backend");
 app.listen(8000);
