@@ -1,13 +1,19 @@
+// Main libraries
 import express from "express";
 import cors from "cors";
-import bodyParser from "body-parser";
+import { connectDB } from "./db";
 
+// Express setup/dependencies
 const app = express();
-
 app.use(cors());
-// app.use(bodyParser);
-app.use(bodyParser.urlencoded());
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+
+// Main routers
+import postrouter from "./routes/postRoutes";
+app.use("/api/posts", postrouter);
+import userrouter from "./routes/userRoutes";
+app.use("/api/users", userrouter);
 
 // Disables CORS issues
 app.use((req, res, next) => {
@@ -27,5 +33,8 @@ app.get("/api/hello", async (req, res) => {
   res.status(200).send("Hello World");
 });
 
+
+//Start DB Connection
+connectDB();
 console.log("Starting backend");
 app.listen(8000);

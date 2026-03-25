@@ -1,6 +1,11 @@
-import { MongoClient } from "mongodb";
+import mongoose from 'mongoose';
 
-const client = new MongoClient(process.env.DB_HOST);
-client.connect();
+export const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.DB_HOST! as string);
 
-export { client };
+    console.log(`MongoDB connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error('Database connection error:', error);
+  }
+};
