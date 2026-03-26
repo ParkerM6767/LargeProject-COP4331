@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Map } from "./components/Map";
 import { MapZoom } from "./components/MapZoom";
 
@@ -27,18 +27,19 @@ const fakePosts: Post[] = [
 ];
 
 function App() {
-  const [fetchedPosts, setFetchedPosts] = useState<Post[] | null>(null);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setFetchedPosts(fakePosts);
-    }, 1000);
-  }, []);
+  // Spoof getting the posts from the api
+  const fetchedPosts = useMemo(
+    () => new Promise<Post[]>((resolve) => setTimeout(() => resolve(fakePosts), 1500)),
+    [],
+  );
 
   return (
     <div className="w-screen h-screen absolute top-0 left-0">
       <Map posts={fetchedPosts}>
         <MapZoom />
+
+        {/* The login component can be placed here, possibly
+         in an absolute div for more control over position */}
       </Map>
     </div>
   );
