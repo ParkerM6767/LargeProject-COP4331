@@ -6,3 +6,14 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+interface Post {
+  creatorId: string;
+  description: string;
+  image: unknown;
+  lattitude: number;
+  longitude: number;
+
+  upvotes: number;
+  downvotes: number;
+}

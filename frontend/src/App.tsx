@@ -1,47 +1,47 @@
-import { Suspense, useMemo, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { useMemo } from "react";
+import { Map } from "./components/Map";
+import { MapZoom } from "./components/MapZoom";
+
+const UCFLong = 28.60235;
+const UCFLat = -81.2002;
+
+const fakePosts: Post[] = [
+  {
+    creatorId: "1",
+    description: "Some class",
+    image: undefined,
+    lattitude: UCFLat - 0.0002,
+    longitude: UCFLong + 0.0013,
+    upvotes: 0,
+    downvotes: 0,
+  },
+  {
+    creatorId: "5",
+    description: "Really annoying construction",
+    image: undefined,
+    lattitude: UCFLat + 0.003,
+    longitude: UCFLong - 0.0045,
+    upvotes: 10,
+    downvotes: 0,
+  },
+];
 
 function App() {
-  const [count, setCount] = useState(0);
-
-  const apiResponse = useMemo(
-    () =>
-      fetch(import.meta.env.VITE_API_BASE + "/api/hello").then((res) =>
-        res.text(),
-      ),
+  // Spoof getting the posts from the api
+  const fetchedPosts = useMemo(
+    () => new Promise<Post[]>((resolve) => setTimeout(() => resolve(fakePosts), 1500)),
     [],
   );
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
+    <div className="w-screen h-screen absolute top-0 left-0">
+      <Map posts={fetchedPosts}>
+        <MapZoom />
 
-      <Suspense fallback={<>&nbsp;</>}>
-        {import.meta.env.VITE_API_BASE} says "{apiResponse}"
-      </Suspense>
-
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+        {/* The login component can be placed here, possibly
+         in an absolute div for more control over position */}
+      </Map>
+    </div>
   );
 }
 
