@@ -1,8 +1,6 @@
-import type { LoginForm, SignupForm } from "../types";
-
 export async function login(payload: LoginForm) {
     try {
-        const response = await fetch("/api/login.ts", {
+        const response = await fetch("/api/user/login", {
             method: "POST",
             credentials: "include",
             headers: {"Content-Type": "application/json"},
@@ -20,9 +18,27 @@ export async function login(payload: LoginForm) {
     }
 }
 
+export async function logout() {
+    try {
+        const response = await fetch("/api/user/logout", {
+            method: "POST",
+            credentials: "include",
+        });
+    if (!response.ok) {
+        throw new Error(`Error status: ${response.status}`);
+    }
+
+    return await response.json();
+
+    } catch(error) {
+        console.error("Login Failed:", error);
+        throw error;
+    }
+}
+
 export async function signup(payload: SignupForm) {
     try {
-        const response = await fetch("/api/register.ts", {
+        const response = await fetch("/api/user/createUser", {
             method: "POST",
             credentials: "include",
             headers: {"Content-Type": "application/json"},

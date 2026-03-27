@@ -1,5 +1,4 @@
 import { useState } from "react"
-import type { LoginForm, SignupForm } from "../types";
 import { login, signup } from "../lib/fetch";
 
 interface ModalProps {
@@ -72,7 +71,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: ModalProps) {
                 </form>
                 <footer className="flex justify-around">
                     <p className="content-center underline text-blue-500" onClick={() => setLoggingIn(!loggingIn)}>{loggingIn === true ? "Create an Account" : "Login"}</p>
-                    <button className="bg-orange-500! text-white" onClick={submitForm}>{loggingIn === true ? "Login" : "Sign Up"}</button>
+                    <button className="bg-orange-500! text-white w-[6vw] h-[4vh] rounded text-sm" onClick={submitForm}>{loggingIn === true ? "Login" : "Sign Up"}</button>
                 </footer>
             </div>   
         </div>
