@@ -15,11 +15,13 @@ const corsOptions = {
 app.use(cors(corsOptions))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser());
 
 // Main routers
 import postrouter from './routes/postRoutes'
 app.use('/api/posts', postrouter)
 import userrouter from './routes/userRoutes'
+import cookieParser from 'cookie-parser';
 app.use('/api/users', userrouter)
 
 app.get('/api/hello', async (req, res) => {
