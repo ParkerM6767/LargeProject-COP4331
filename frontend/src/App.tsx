@@ -62,7 +62,6 @@ const fakePosts: Post[] = [
   },
 ];
 
-function App() {
   // Spoof getting the posts from the api
   const fetchedPosts = useMemo(
     () => new Promise<Post[]>((resolve) => setTimeout(() => resolve(fakePosts), 1500)),
