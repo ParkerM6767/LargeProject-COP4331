@@ -3,6 +3,8 @@ import { Document, Schema, Types, model } from 'mongoose'
 export interface IPost extends Document {
   upvote: number
   downvote: number
+  upvotedBy: Types.ObjectId[]
+  downvotedBy: Types.ObjectId[]
   longitude: number
   latitude: number
   description: string
@@ -16,6 +18,14 @@ const PostSchema: Schema = new Schema(
       type: Number,
       default: 0
     },
+    upvotedBy: [{
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    }],
+    downvotedBy: [{
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    }],
     downvote: {
       type: Number,
       default: 0
@@ -35,7 +45,7 @@ const PostSchema: Schema = new Schema(
     },
     imageUrl: {
       type: String,
-      required: true,
+      required: false,
       trim: true
     },
     creatorId: {
