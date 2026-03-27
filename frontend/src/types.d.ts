@@ -17,3 +17,13 @@ interface Post {
   upvotes: number;
   downvotes: number;
 }
+
+interface LoginForm {
+    email: string,
+    password:string
+}
+
+interface SignupForm extends LoginForm{
+    firstName: string,
+    lastName: string
+}
