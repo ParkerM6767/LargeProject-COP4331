@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt'
 import { Request, Response } from "express";
 import { User } from '../../models/user.model';
+import jwt from 'jsonwebtoken';
+const maxTokenAge = 60*60*1000; // 1 Hour
 
 export async function login(req: Request, res: Response){
     const email = req.body.email;
@@ -12,6 +14,13 @@ export async function login(req: Request, res: Response){
     const correct_credentials: boolean = await bcrypt.compare(password_unhashed, user_query.password);
     if(!correct_credentials) return res.status(400).json( {"message":"invalid credentials"} );
 
-    //Finish up auth/jwt here
-    return res.status(200).json( {"message":`Welcome ${user_query.firstName}`} );
+    const token = jwt.sign({ id: user_query._id}, process.env.JWT_SECRET as string, { expiresIn: '1h'} );
+    res.cookie('token', token, {
+        httpOnly: true,
+        sameSite: 'strict',
+        maxAge: maxTokenAge
+    });
+    res.status(200).json( {
+        id: user_query._id
+    } );
 }
