@@ -20,8 +20,8 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: ModalProps) {
 
     function signupPayload(firstName: string, lastName: string, email: string, password: string): SignupForm {
         const payload = {
-            firstName: firstName,
-            lastName: lastName,
+            first_name: firstName,
+            last_name: lastName,
             email: email,
             password: password
         }

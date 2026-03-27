@@ -24,6 +24,6 @@ interface LoginForm {
 }
 
 interface SignupForm extends LoginForm{
-    firstName: string,
-    lastName: string
+    first_name: string,
+    last_name: string
 }

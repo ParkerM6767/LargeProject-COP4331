@@ -19,6 +19,6 @@ export async function createUser(req: Request, res: Response) {
         });
         res.status(201).json({user});
     } catch(err) {
-        res.status(500).json({ error:"Failed to create user" });
+        res.status(500).json({ error: `${err}` });
     }
 }
