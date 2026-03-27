@@ -20,7 +20,7 @@ interface Post {
 
 interface LoginForm {
     email: string,
-    password:string
+    password: string
 }
 
 interface SignupForm extends LoginForm{

@@ -5,7 +5,14 @@ import { connectDB } from './db'
 
 // Express setup/dependencies
 const app = express()
-app.use(cors())
+
+const corsOptions = {
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+};
+
+app.use(cors(corsOptions))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -14,20 +21,6 @@ import postrouter from './routes/postRoutes'
 app.use('/api/posts', postrouter)
 import userrouter from './routes/userRoutes'
 app.use('/api/users', userrouter)
-
-// Disables CORS issues
-// app.use((req, res, next) => {
-//   res.setHeader('Access-Control-Allow-Origin', '*')
-//   res.setHeader(
-//     'Access-Control-Allow-Headers',
-//     'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-//   )
-//   res.setHeader(
-//     'Access-Control-Allow-Methods',
-//     'GET, POST, PATCH, DELETE, OPTIONS'
-//   )
-//   next()
-// })
 
 app.get('/api/hello', async (req, res) => {
   res.status(200).send('Hello World')

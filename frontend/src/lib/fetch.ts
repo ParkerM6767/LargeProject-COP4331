@@ -1,6 +1,6 @@
 export async function login(payload: LoginForm) {
     try {
-        const response = await fetch("/api/user/login", {
+        const response = await fetch("http://localhost:8000/api/users/login", {
             method: "POST",
             credentials: "include",
             headers: {"Content-Type": "application/json"},
@@ -20,7 +20,7 @@ export async function login(payload: LoginForm) {
 
 export async function logout() {
     try {
-        const response = await fetch("/api/user/logout", {
+        const response = await fetch("/api/users/logout", {
             method: "POST",
             credentials: "include",
         });
@@ -38,7 +38,7 @@ export async function logout() {
 
 export async function signup(payload: SignupForm) {
     try {
-        const response = await fetch("/api/user/createUser", {
+        const response = await fetch("/api/users/createUser", {
             method: "POST",
             credentials: "include",
             headers: {"Content-Type": "application/json"},
