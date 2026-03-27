@@ -62,37 +62,4 @@ const fakePosts: Post[] = [
   },
 ];
 
-function App() {
-  // Spoof getting the posts from the api
-  const fetchedPosts = useMemo(
-    () => new Promise<Post[]>((resolve) => setTimeout(() => resolve(fakePosts), 1500)),
-    [],
-  );
-
-  return (
-    <div className="w-screen h-screen absolute top-0 left-0">
-      <Map posts={fetchedPosts}>
-        <MapZoom />
-
-      {isLoggedIn ? 
-        <div className="absolute top-6 right-10 bg-orange-500 rounded flex justify-center items-align-center text-white w-[10vw] h-[5vh] text-lg">
-          <button onClick={() => setIsLoggedIn(false)}>Logout</button> 
-        </div>
-        : 
-        <div className="absolute top-6 right-10 bg-orange-500 rounded flex justify-center items-align-center text-white w-[10vw] h-[5vh] text-lg">
-          <button onClick={() => setIsModalOpen(!isModalOpen)}>Login</button>        
-        </div>
-      }
-      <LoginModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onLoginSuccess={handleLoginSuccess}
-      />
-        {/* The login component can be placed here, possibly
-         in an absolute div for more control over position */}
-      </Map>
-    </div>
-  );
-}
-
 export default App;
