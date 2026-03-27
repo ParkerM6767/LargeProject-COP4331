@@ -14,7 +14,7 @@ export async function login(req: Request, res: Response){
     const correct_credentials: boolean = await bcrypt.compare(password_unhashed, user_query.password);
     if(!correct_credentials) return res.status(400).json( {"message":"invalid credentials"} );
 
-    const token = jwt.sign({ id: user_query._id}, process.env.JWT_SECRET as string, { expiresIn: '12h'} );
+    const token = jwt.sign({ id: user_query._id}, process.env.JWT_SECRET as string, { expiresIn: '1h'} );
     res.cookie('token', token, {
         httpOnly: true,
         sameSite: 'strict',
