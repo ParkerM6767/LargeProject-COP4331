@@ -1,23 +1,24 @@
 import { Router } from 'express'
+import { authMiddleware } from '../middleware/auth.middleware'
 
 import { createPost } from '../controllers/post/createPosts'
 import { getPosts, getPostById, getPostsByUserId } from '../controllers/post/getPosts'
 import {
   updatePost,
-  upVotePost,
-  downVotePost
+  upvotePost,
+  downvotePost
 } from '../controllers/post/updatePosts'
 import { deletePost } from '../controllers/post/deletePosts'
 
 const postrouter = Router()
 
-postrouter.post('/', createPost)
+postrouter.post('/', authMiddleware, createPost)
 postrouter.get('/', getPosts)
+postrouter.get('/my-posts', authMiddleware, getPostsByUserId)
 postrouter.get('/:id', getPostById)
-postrouter.get('/my-posts', getPostsByUserId)
-postrouter.put('/:id', updatePost)
-postrouter.put('/:id/upvote', upVotePost)
-postrouter.put('/:id/downvote', downVotePost)
-postrouter.delete('/:id', deletePost)
+postrouter.put('/:id', authMiddleware, updatePost) 
+postrouter.put('/:id/upvote', authMiddleware, upvotePost) 
+postrouter.put('/:id/downvote', authMiddleware, downvotePost)
+postrouter.delete('/:id', authMiddleware, deletePost)
 
 export default postrouter
