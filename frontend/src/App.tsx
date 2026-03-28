@@ -4,6 +4,7 @@ import { MapZoom } from "./components/MapZoom";
 import { useState } from "react";
 import "./index.css";
 import { LoginModal } from "./components/LoginModal";
+import { Button } from "./components/ui/button";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -50,13 +51,19 @@ const fakePosts: Post[] = [
         <MapZoom />
 
       {isLoggedIn ? 
-        <div className="absolute top-6 right-10 bg-orange-500 rounded flex justify-center items-align-center text-white w-[5vw] h-[5vh] text-lg">
-          <button onClick={() => setIsLoggedIn(false)}>Logout</button> 
-        </div>
+        // <div className="absolute top-6 right-10 bg-orange-500 rounded flex justify-center items-align-center text-white w-[5vw] h-[5vh] text-lg">
+        //   <button onClick={() => setIsLoggedIn(false)}>Logout</button> 
+        // </div>
+        <Button className="absolute top-6 right-10 text-lg bg-orange-500 text-white w-[5em] h-[2em]" onClick={() => setIsLoggedIn(false)}>
+          Logout
+        </Button>
         : 
-        <div className="absolute top-6 right-10 bg-orange-500 rounded flex justify-center items-align-center text-white w-[5vw] h-[5vh] text-lg">
-          <button onClick={() => setIsModalOpen(!isModalOpen)}>Login</button>        
-        </div>
+        // <div className="absolute top-6 right-10 bg-orange-500 rounded flex justify-center items-align-center text-white text-lg">
+        //   <button onClick={() => setIsModalOpen(!isModalOpen)} >Login</button>
+        // </div>
+        <Button className="absolute top-6 right-10 text-lg bg-orange-500 text-white w-[5em] h-[2em]" onClick={() => setIsModalOpen(!isModalOpen)}>
+          Login
+        </Button>
       }
       <LoginModal
         isOpen={isModalOpen}
