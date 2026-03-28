@@ -2,6 +2,8 @@
 import express from 'express'
 import cors from 'cors'
 import { connectDB } from './db'
+import dotenv from 'dotenv'
+dotenv.config()
 
 // Express setup/dependencies
 const app = express()

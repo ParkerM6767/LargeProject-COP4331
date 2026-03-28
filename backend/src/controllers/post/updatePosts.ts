@@ -7,7 +7,7 @@ export async function updatePost (req: Request, res: Response) {
   try {
     const postId = req.params.id
     const post = await Post.findById(postId).select(
-      'description imageUrl longitude latitude upvote downvote createdAt'
+      'description imageUrl longitude latitude upvote downvote createdAt creatorId'
     )
 
     if (!post) {
