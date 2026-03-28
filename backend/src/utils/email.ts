@@ -10,7 +10,11 @@ const transporter = nodemailer.createTransport({
   }
 })
 
-export async function forgotPasswordEmail (to: string, token: string, baseUrl: string) {
+export async function forgotPasswordEmail (
+  to: string,
+  token: string,
+  baseUrl: string
+) {
   const resetLink = `${baseUrl}/reset-password?token=${token}`
 
   await transporter.sendMail({
