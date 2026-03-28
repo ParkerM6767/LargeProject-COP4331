@@ -66,7 +66,7 @@ export function SideBarToggle() {
   const { open, toggleSidebar } = useSidebar();
 
   return (
-    <Button onClick={toggleSidebar}>
+    <Button onClick={toggleSidebar} variant="outline">
       {open ? <LucideSidebarClose /> : <LucideSidebarOpen />}
     </Button>
   );

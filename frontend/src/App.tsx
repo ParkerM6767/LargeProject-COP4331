@@ -8,6 +8,7 @@ import { Button } from "./components/ui/button";
 import { Dialog, DialogTrigger } from "./components/ui/dialog";
 import { PostSidebar, SideBarToggle } from "./components/PostSidebar";
 import { SidebarInset, SidebarProvider } from "./components/ui/shad-sidebar";
+import { ModeToggle } from "./components/ui/themes";
 
 const UCFLong = 28.60235;
 const UCFLat = -81.2002;
@@ -56,7 +57,7 @@ function App() {
           <div className="flex gap-2">
             <SideBarToggle />
             <MapZoom />
-            {/* Darkmode here */}
+            <ModeToggle />
           </div>
 
           {isLoggedIn ? (
