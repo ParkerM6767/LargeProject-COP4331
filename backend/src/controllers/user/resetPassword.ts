@@ -22,9 +22,8 @@ export async function forgotPassword (req: Request, res: Response) {
     }
 
     const token = crypto.randomBytes(32).toString('hex')
-    const hashedToken = await bcrypt.hash(token, 10)
 
-    user.resetToken = hashedToken
+    user.resetToken = token
     user.resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
 
     await user.save()
@@ -52,18 +51,22 @@ export async function resetPassword (req: Request, res: Response) {
         .status(400)
         .json({ message: 'Token and new password are required' })
     }
-    
+
     const user = await User.findOne({
       resetToken: token,
-      resetTokenExpires: { $gt: new Date() } // Ensures token isn't expired
+      resetTokenExpires: { $gt: new Date() }
     })
 
     if (!user) {
-      return res.status(400).json({ message: 'Invalid or expired token' })
+      return res.status(400).json({
+        message: 'Invalid or expired token'
+      })
     }
 
     if (newPassword === user.password) {
-      return res.status(400).json({ message: 'New password cannot be the same as the old password' })
+      return res.status(400).json({
+        message: 'New password cannot be the same as the old password'
+      })
     }
 
     user.password = await bcrypt.hash(newPassword, 10)
