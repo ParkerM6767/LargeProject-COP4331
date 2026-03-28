@@ -7,6 +7,8 @@ export interface IUser extends Document {
   password: string
   createdAt: Date
   updatedAt: Date
+  resetToken?: string
+  resetTokenExpires?: Date
 }
 
 const UserSchema: Schema = new Schema(
@@ -31,6 +33,12 @@ const UserSchema: Schema = new Schema(
     password: {
       type: String,
       required: true
+    },
+    resetToken: {
+      type: String
+    },
+    resetTokenExpires: {
+      type: Date
     }
   },
   {
