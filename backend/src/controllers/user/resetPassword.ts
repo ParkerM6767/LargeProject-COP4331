@@ -17,7 +17,7 @@ export async function forgotPassword (req: Request, res: Response) {
 
     if (!user) {
       return res
-        .status(404)
+        .status(200)
         .json({ message: 'If email exists, a reset link will be sent' })
     }
 
@@ -28,7 +28,7 @@ export async function forgotPassword (req: Request, res: Response) {
 
     await user.save()
 
-    await forgotPasswordEmail(email, token)
+    await forgotPasswordEmail(email, token, `${req.protocol}://${req.get('host')}`)
 
     res
       .status(200)
