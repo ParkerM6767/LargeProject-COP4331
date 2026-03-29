@@ -9,6 +9,7 @@ export function MapZoom() {
   return (
     <ButtonGroup className="z-500">
       <Button
+        variant="outline"
         onClick={(e) => {
           map.zoomIn();
           e.stopPropagation();
@@ -17,6 +18,7 @@ export function MapZoom() {
         <Plus />
       </Button>
       <Button
+        variant="outline"
         onClick={(e) => {
           map.zoomOut();
           e.stopPropagation();
