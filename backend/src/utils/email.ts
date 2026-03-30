@@ -27,3 +27,19 @@ export async function forgotPasswordEmail (
         `
   })
 }
+
+export async function sendVerificationEmail(
+  to: string,
+  code: string
+) {
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to,
+    subject: 'Email Verification Code',
+    html: `
+      <p>Your verification code is:</p>
+      <h2>${code}</h2>
+      <p>This code will expire in 10 minutes.</p>
+    `
+  })
+}
