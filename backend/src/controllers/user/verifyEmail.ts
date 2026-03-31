@@ -7,25 +7,30 @@ export const verifyEmail = async (req: Request, res: Response) => {
 
     const user = await User.findOne({ email })
 
-    if (!user || !user.resetToken) {
+    if (!user || !user.verificationCode) {
       return res.status(400).json({ message: 'Invalid request' })
     }
 
-    if (user.resetToken !== code) {
-      return res.status(400).json({ message: 'Invalid code' })
-    }
+  if (user.verificationCode !== code) {
+    return res.status(400).json({ message: 'Invalid code' })
+  }
 
-    if (user.resetTokenExpires && user.resetTokenExpires < new Date()) {
-      return res.status(400).json({ message: 'Code expired' })
-    }
+  if (
+    user.verificationCodeExpires &&
+    user.verificationCodeExpires < new Date()
+  ) {
+    return res.status(400).json({ message: 'Code expired' })
+  }
 
-    user.resetToken = undefined
-    user.resetTokenExpires = undefined
+  user.isVerified = true
 
-    await user.save()
+  user.verificationCode = undefined
+  user.verificationCodeExpires = undefined
+
+  await user.save()
 
     return res.json({ message: 'Email verified successfully' })
-  } catch (error) {
+  }catch (error) {
     return res.status(500).json({ message: 'Server error' })
   }
 }
