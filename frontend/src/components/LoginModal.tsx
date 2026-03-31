@@ -6,6 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
+import { Button } from "./ui/button";
 
 interface ModalProps {
   onLoginSuccess: () => void;
@@ -20,27 +21,29 @@ export function LoginModal({ onLoginSuccess }: ModalProps) {
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
 
-  function signupPayload(
-    firstName: string,
-    lastName: string,
-    email: string,
-    password: string,
-  ): SignupForm {
-    const payload = {
-      first_name: firstName,
-      last_name: lastName,
-      email: email,
-      password: password,
-    };
-    return payload;
-  }
-
   function loginPayload(email: string, password: string): LoginForm {
     const payload = {
       email: email,
       password: password,
     };
     return payload;
+  }
+
+  function signupPayload(firstName: string, lastName: string, email: string, password: string): SignupForm {
+    // Confirm that email string has an @ucf.edu
+    if (!email.endsWith("@ucf.edu")) {
+      // Remove this alert later; only for testing atm
+      alert("You need a valid ucf.edu email in order to sign up.");
+      throw new Error("Invalid email. Please use your UCF email.");
+    }
+
+    const payload = {
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      password: password
+    }
+    return payload
   }
 
   async function submitForm() {
@@ -117,12 +120,12 @@ export function LoginModal({ onLoginSuccess }: ModalProps) {
           >
             {loggingIn === true ? "Create an Account" : "Login"}
           </p>
-          <button
+          <Button
             className="bg-orange-500! text-white py-2 px-4 rounded text-sm"
             onClick={submitForm}
           >
             {loggingIn === true ? "Login" : "Sign Up"}
-          </button>
+          </Button>
         </DialogFooter>
       </DialogContent>
     </>
