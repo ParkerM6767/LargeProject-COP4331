@@ -9,6 +9,9 @@ export interface IUser extends Document {
   updatedAt: Date
   resetToken?: string
   resetTokenExpires?: Date
+  verificationCode?: string
+  verificationCodeExpires?: Date
+  isVerified?: boolean
 }
 
 const UserSchema: Schema = new Schema(
@@ -39,7 +42,17 @@ const UserSchema: Schema = new Schema(
     },
     resetTokenExpires: {
       type: Date
-    }
+    },
+    verificationCode: {
+      type: String
+    },
+    verificationCodeExpires: {
+      type: Date
+    },
+    isVerified: {
+      type: Boolean,
+      default: false
+    },
   },
   {
     timestamps: true
