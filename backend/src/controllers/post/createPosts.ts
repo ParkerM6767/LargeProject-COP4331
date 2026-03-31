@@ -4,8 +4,12 @@ import { Post } from '../../models/post.model'
 // POST /
 export async function createPost (req: Request, res: Response) {
   try {
-    const { longitude, latitude, description, imageUrl } = req.body
+    const { title, longitude, latitude, description, imageUrl } = req.body
     const userId = req.user
+
+    if (!title || title.trim().length === 0) {
+      return res.status(400).json({ message: 'Title is required' })
+    }
 
     if (!description || description.trim().length === 0) {
       return res.status(400).json({ message: 'Description is required' })
@@ -24,6 +28,7 @@ export async function createPost (req: Request, res: Response) {
     }
 
     const post = await Post.create({
+      title,
       longitude,
       latitude,
       description,
