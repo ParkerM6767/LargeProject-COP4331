@@ -97,7 +97,7 @@ export function LoginModal({ onLoginSuccess }: ModalProps) {
           className="border rounded p-2"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          type="text"
+          type="password"
           placeholder="Password"
         />
         {loggingIn === false && (
@@ -106,7 +106,7 @@ export function LoginModal({ onLoginSuccess }: ModalProps) {
               className="border rounded p-2"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              type="text"
+              type="password"
               placeholder="Confirm Password"
             />
             {password !== confirmPassword && <div>Passwords Don't match</div>}
