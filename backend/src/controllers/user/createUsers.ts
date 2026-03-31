@@ -20,10 +20,12 @@ export async function createUser(req: Request, res: Response) {
             lastName: last_name,
             email: email,
             password: password_hashed,
-            resetToken: verificationCode,
-            resetTokenExpires: verificationExpires
+            verificationCode: verificationCode,
+            verificationCodeExpires: verificationExpires,
+            isVerified: false,
         });
-        sendVerificationEmail(email, verificationCode);
+
+        await sendVerificationEmail(email, verificationCode)
 
         res.status(201).json({user});
     } catch(err) {
