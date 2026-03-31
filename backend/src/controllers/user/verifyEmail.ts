@@ -11,23 +11,23 @@ export const verifyEmail = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Invalid request' })
     }
 
-  if (user.verificationCode !== code) {
-    return res.status(400).json({ message: 'Invalid code' })
-  }
+    if (user.verificationCode !== code) {
+      return res.status(400).json({ message: 'Invalid code' })
+    }
 
-  if (
-    user.verificationCodeExpires &&
-    user.verificationCodeExpires < new Date()
-  ) {
-    return res.status(400).json({ message: 'Code expired' })
-  }
+    if (
+      user.verificationCodeExpires &&
+      user.verificationCodeExpires < new Date()
+    ) {
+      return res.status(400).json({ message: 'Code expired' })
+    }
 
-  user.isVerified = true
+    user.isVerified = true
 
-  user.verificationCode = undefined
-  user.verificationCodeExpires = undefined
+    user.verificationCode = undefined
+    user.verificationCodeExpires = undefined
 
-  await user.save()
+    await user.save()
 
     return res.json({ message: 'Email verified successfully' })
   }catch (error) {
