@@ -5,15 +5,10 @@ import { useState } from "react";
 import "./index.css";
 import { LoginModal } from "./components/LoginModal";
 import { Button } from "./components/ui/button";
-
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleLoginSuccess = () => {
-    setIsLoggedIn(true);
-    setIsModalOpen(false);
-  };
+import { Dialog, DialogTrigger } from "./components/ui/dialog";
+import { PostSidebar, SideBarToggle } from "./components/PostSidebar";
+import { SidebarInset, SidebarProvider } from "./components/ui/shad-sidebar";
+import { ModeToggle } from "./components/ui/themes";
 
 const UCFLong = 28.60235;
 const UCFLat = -81.2002;
@@ -39,41 +34,56 @@ const fakePosts: Post[] = [
   },
 ];
 
+function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   // Spoof getting the posts from the api
   const fetchedPosts = useMemo(
-    () => new Promise<Post[]>((resolve) => setTimeout(() => resolve(fakePosts), 1500)),
+    () =>
+      new Promise<Post[]>((resolve) =>
+        setTimeout(() => resolve(fakePosts), 1500),
+      ),
     [],
   );
 
   return (
-    <div className="w-screen h-screen absolute top-0 left-0">
-      <Map posts={fetchedPosts}>
-        <MapZoom />
+    <SidebarProvider className="w-screen h-screen absolute top-0 left-0">
+      <PostSidebar posts={fetchedPosts} />
 
-      {isLoggedIn ? 
-        // <div className="absolute top-6 right-10 bg-orange-500 rounded flex justify-center items-align-center text-white w-[5vw] h-[5vh] text-lg">
-        //   <button onClick={() => setIsLoggedIn(false)}>Logout</button> 
-        // </div>
-        <Button className="absolute top-6 right-10 text-lg bg-orange-500 text-white w-[5em] h-[2em]" onClick={() => setIsLoggedIn(false)}>
-          Logout
-        </Button>
-        : 
-        // <div className="absolute top-6 right-10 bg-orange-500 rounded flex justify-center items-align-center text-white text-lg">
-        //   <button onClick={() => setIsModalOpen(!isModalOpen)} >Login</button>
-        // </div>
-        <Button className="absolute top-6 right-10 text-lg bg-orange-500 text-white w-[5em] h-[2em]" onClick={() => setIsModalOpen(!isModalOpen)}>
-          Login
-        </Button>
-      }
-      <LoginModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onLoginSuccess={handleLoginSuccess}
-      />
-        {/* The login component can be placed here, possibly
-         in an absolute div for more control over position */}
-      </Map>
-    </div>
+      <SidebarInset className="h-full">
+        {/* Everything that gets moved by the sidebar goes below */}
+
+        <Map posts={fetchedPosts}>
+          <div className="flex gap-2">
+            <SideBarToggle />
+            <MapZoom />
+            <ModeToggle />
+          </div>
+
+          {isLoggedIn ? (
+            <Button
+              onClick={() => setIsLoggedIn(false)}
+              size="lg"
+              className="absolute top-6 right-10 p-4 bg-orange-500"
+            >
+              Logout
+            </Button>
+          ) : (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  size="lg"
+                  className="absolute top-6 right-10 p-4 bg-orange-500"
+                >
+                  Login
+                </Button>
+              </DialogTrigger>
+              <LoginModal onLoginSuccess={() => setIsLoggedIn(true)} />
+            </Dialog>
+          )}
+        </Map>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
 
