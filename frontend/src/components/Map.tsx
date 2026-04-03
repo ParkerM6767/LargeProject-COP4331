@@ -1,8 +1,16 @@
 import type { Map as MapType } from "leaflet";
 import { Suspense, useEffect, useRef, type PropsWithChildren } from "react";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { PostAnywhere } from "./PostAnywhere";
 
-export function Map({ posts, children }: PropsWithChildren<{ posts: Post[] }>) {
+export function Map({
+  posts,
+  user,
+  children,
+}: PropsWithChildren<{
+  posts: Post[];
+  user: { firstName: string; lastName: string } | null;
+}>) {
   const mapRef = useRef<MapType>(null);
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -26,7 +34,7 @@ export function Map({ posts, children }: PropsWithChildren<{ posts: Post[] }>) {
           [28.58163, -81.24503],
           [28.61193, -81.17455],
         ]}
-        maxBoundsViscosity={1}  
+        maxBoundsViscosity={1}
         zoom={16}
         zoomControl={false}
         doubleClickZoom={false}
@@ -42,6 +50,9 @@ export function Map({ posts, children }: PropsWithChildren<{ posts: Post[] }>) {
         <Suspense fallback={<></>}>
           <RenderPosts posts={posts} />
         </Suspense>
+
+        {/* Let the user drop a new post by clicking on the map */}
+        <PostAnywhere user={user} />
 
         {/* Show any children in a layer above the map */}
         <div className="w-full h-full z-1001 relative p-4">{children}</div>
