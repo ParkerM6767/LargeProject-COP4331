@@ -55,3 +55,41 @@ export async function signup(payload: SignupForm) {
         throw error;
     }
 }
+
+export async function submitPost(payload: EventForm) {
+    try {
+        const response = await fetch("http://localhost:8000/api/posts", {
+            method: "POST",
+            credentials: "include",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(payload)
+        });
+    if (!response.ok) {
+        throw new Error(`Error status: ${response.status}`);
+    }
+
+    return await response.json();
+
+    } catch(error) {
+        console.error("Post submission failed:", error);
+        throw error;
+    }
+}
+
+export async function fetchPosts(): Promise<Post[]> {
+    try {
+        const response = await fetch("http://localhost:8000/api/posts", {
+            method: "GET",
+            credentials: "include"
+        });
+    if (!response.ok) {
+        throw new Error(`Error status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.posts;
+
+    } catch(error) {
+        console.error("Fetch Posts failed:", error);
+        throw error;
+    }
+}
