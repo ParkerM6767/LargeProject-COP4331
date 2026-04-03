@@ -1,7 +1,6 @@
 import type { Map as MapType } from "leaflet";
 import {
   Suspense,
-  use,
   useEffect,
   useRef,
   type PropsWithChildren,
@@ -11,7 +10,7 @@ import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 export function Map({
   posts,
   children,
-}: PropsWithChildren<{ posts: Promise<Post[]> }>) {
+}: PropsWithChildren<{ posts: Post[] }>) {
   const mapRef = useRef<MapType>(null);
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -55,13 +54,11 @@ export function Map({
 
 // To use `Suspense` properly, the `use` has to happen in a separate component.
 // `use` in components is about the same as `await` in most cases
-function RenderPosts({ posts }: { posts: Promise<Post[]> }) {
-  const resolvedPosts = use(posts);
-
+function RenderPosts({ posts }: { posts: Post[] }) {
   return (
     <>
-      {resolvedPosts.map((post) => (
-        <Marker position={[post.longitude, post.lattitude]}>
+      {posts.map((post) => (
+        <Marker key={post._id} position={[post.longitude, post.latitude]}>
           <Popup>{post.description}</Popup>
         </Marker>
       ))}

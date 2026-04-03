@@ -9,7 +9,7 @@ import {
 import { Button } from "./ui/button";
 
 interface ModalProps {
-  onLoginSuccess: () => void;
+  onLoginSuccess: (user: { firstName: string; lastName: string }) => void;
 }
 
 export function LoginModal({ onLoginSuccess }: ModalProps) {
@@ -48,12 +48,13 @@ export function LoginModal({ onLoginSuccess }: ModalProps) {
 
   async function submitForm() {
     try {
+      let data;
       if (loggingIn === true) {
-        await login(loginPayload(email, password));
+        data = await login(loginPayload(email, password));
       } else {
-        await signup(signupPayload(firstName, lastName, email, password));
+        data = await signup(signupPayload(firstName, lastName, email, password));
       }
-      onLoginSuccess();
+      onLoginSuccess({ firstName: data.firstName, lastName: data.lastName });
     } catch (error) {
       console.error("Error:", error);
     }
@@ -121,7 +122,7 @@ export function LoginModal({ onLoginSuccess }: ModalProps) {
             {loggingIn === true ? "Create an Account" : "Login"}
           </p>
           <Button
-            className="bg-orange-500! text-white py-2 px-4 rounded text-sm"
+            className="py-2 px-4 rounded text-sm"
             onClick={submitForm}
           >
             {loggingIn === true ? "Login" : "Sign Up"}
