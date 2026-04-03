@@ -15,6 +15,10 @@ export async function login(req: Request, res: Response) {
         const correct_credentials: boolean = await bcrypt.compare(password_unhashed, user_query.password);
         if (!correct_credentials) return res.status(400).json({ "message": "invalid credentials" });
 
+        if (!user_query.isVerified) {
+            return res.status(403).json({ "message": "Please verify your email before logging in" });
+        }
+        
         // hardcoded JWT secret until fix
         const token = jwt.sign({ id: user_query._id }, process.env.JWT_SECRET as string, { expiresIn: '1h' });
         res.cookie('token', token, {
