@@ -1,16 +1,8 @@
 import type { Map as MapType } from "leaflet";
-import {
-  Suspense,
-  useEffect,
-  useRef,
-  type PropsWithChildren,
-} from "react";
+import { Suspense, useEffect, useRef, type PropsWithChildren } from "react";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 
-export function Map({
-  posts,
-  children,
-}: PropsWithChildren<{ posts: Post[] }>) {
+export function Map({ posts, children }: PropsWithChildren<{ posts: Post[] }>) {
   const mapRef = useRef<MapType>(null);
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -30,6 +22,11 @@ export function Map({
     <div className="w-full h-full" ref={divRef}>
       <MapContainer
         center={[28.60235, -81.2002]}
+        maxBounds={[
+          [28.58163, -81.24503],
+          [28.61193, -81.17455],
+        ]}
+        maxBoundsViscosity={1}  
         zoom={16}
         zoomControl={false}
         className="h-full"
