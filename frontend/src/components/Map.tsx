@@ -29,6 +29,7 @@ export function Map({ posts, children }: PropsWithChildren<{ posts: Post[] }>) {
         maxBoundsViscosity={1}  
         zoom={16}
         zoomControl={false}
+        doubleClickZoom={false}
         className="h-full"
         ref={mapRef}
       >
