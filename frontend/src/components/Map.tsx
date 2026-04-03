@@ -67,7 +67,7 @@ function RenderPosts({ posts }: { posts: Post[] }) {
   return (
     <>
       {posts.map((post) => (
-        <Marker key={post._id} position={[post.longitude, post.latitude]}>
+        <Marker key={post._id} position={[post.latitude, post.longitude]}>
           <Popup>{post.description}</Popup>
         </Marker>
       ))}
