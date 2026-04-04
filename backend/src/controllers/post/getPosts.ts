@@ -15,7 +15,7 @@ export async function getPosts (req: Request, res: Response) {
       .skip(skip)
       .limit(limit)
       .select(
-        'title description imageUrl longitude latitude upvote downvote createdAt'
+        'title description imageUrl longitude latitude upvote downvote createdAt creatorId'
       )
 
     res.status(200).json({ message: 'Posts retrieved successfully', posts })

@@ -22,11 +22,9 @@ export async function updatePost (req: Request, res: Response) {
         .json({ message: 'Unauthorized to update this post' })
     }
 
-    const { title, longitude, latitude, description, imageUrl } = req.body
+    const { title, description, imageUrl } = req.body
 
     post.title = title || post.title
-    post.longitude = longitude || post.longitude
-    post.latitude = latitude || post.latitude
     post.description = description || post.description
     post.imageUrl = imageUrl || post.imageUrl
 
