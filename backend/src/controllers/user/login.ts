@@ -17,7 +17,7 @@ export async function login(req: Request, res: Response) {
         const correct_credentials: boolean = await bcrypt.compare(password_unhashed, user_query.password);
         if (!correct_credentials) return res.status(400).json({ "message": "invalid credentials" });
 
-        // If user isn't verified, send a new verification code
+        
         if (!user_query.isVerified) {
             const newCode = Math.floor(100000 + Math.random() * 900000).toString();
             const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 min from now
@@ -31,7 +31,7 @@ export async function login(req: Request, res: Response) {
             return res.status(403).json({ "message": "Email not verified. A new verification code has been sent." });
         }
 
-        // User is verified, continue login
+    
         const token = jwt.sign({ id: user_query._id }, process.env.JWT_SECRET as string, { expiresIn: '1h' });
         res.cookie('token', token, {
             httpOnly: true,
