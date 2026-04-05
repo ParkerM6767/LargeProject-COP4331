@@ -40,6 +40,11 @@ export async function login(req: Request, res: Response) {
         });
         res.status(200).json({ id: user_query._id });
 
+        res.status(200).json({
+            id: user_query._id,
+            firstName: user_query.firstName,
+            lastName: user_query.lastName
+        });
     } catch (err) {
         res.status(500).json({ error: `${err}` });
     }

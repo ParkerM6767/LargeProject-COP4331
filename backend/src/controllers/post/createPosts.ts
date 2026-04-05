@@ -4,8 +4,12 @@ import { Post } from '../../models/post.model'
 // POST /
 export async function createPost (req: Request, res: Response) {
   try {
-    const { longitude, latitude, description, imageUrl } = req.body
+    const { title, longitude, latitude, description, imageUrl } = req.body
     const userId = req.user
+
+    if (!title || title.trim().length === 0) {
+      return res.status(400).json({ message: 'Title is required' })
+    }
 
     if (!description || description.trim().length === 0) {
       return res.status(400).json({ message: 'Description is required' })
@@ -23,7 +27,32 @@ export async function createPost (req: Request, res: Response) {
         .json({ message: 'Longitude and latitude must be numbers' })
     }
 
+    const topLeft = process.env.TOP_LEFT_CORNER_BOUNDS?.split(',')
+    const bottomRight = process.env.BOTTOM_RIGHT_CORNER_BOUNDS?.split(',')
+
+    if (
+      !topLeft ||
+      !bottomRight ||
+      topLeft.length !== 2 ||
+      bottomRight.length !== 2
+    ) {
+      throw new Error('Invalid map boundaries')
+    }
+
+    const [maxLat, minLng] = topLeft.map(Number)
+    const [minLat, maxLng] = bottomRight.map(Number)
+
+    if (
+      longitude < maxLng ||
+      longitude > minLng ||
+      latitude < minLat ||
+      latitude > maxLat
+    ) {
+      return res.status(400).json({ message: 'Coordinates are out of bounds' })
+    }
+
     const post = await Post.create({
+      title,
       longitude,
       latitude,
       description,

@@ -1,6 +1,7 @@
 import { Document, Schema, Types, model } from 'mongoose'
 
 export interface IPost extends Document {
+  title: string
   upvote: number
   downvote: number
   upvotedBy: Types.ObjectId[]
@@ -14,6 +15,11 @@ export interface IPost extends Document {
 
 const PostSchema: Schema = new Schema(
   {
+    title: {
+      type: String,
+      required: true,
+      trim: true
+    },
     upvote: {
       type: Number,
       default: 0
