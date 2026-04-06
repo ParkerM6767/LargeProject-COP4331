@@ -1,5 +1,8 @@
 import { Request, Response } from 'express'
 import { Post } from '../../models/post.model'
+import fs from 'fs';
+import path from 'path';
+const staticImagePath = (import.meta.dirname) + '/../../../public/images/posts/';
 
 // DELETE /:id
 export async function deletePost (req: Request, res: Response) {
@@ -19,7 +22,9 @@ export async function deletePost (req: Request, res: Response) {
         .json({ message: 'Unauthorized to delete this post' })
     }
 
+    const imageToDelete = post.imageUrl;
     await post.deleteOne()
+    fs.unlink(staticImagePath + imageToDelete, (err) => {console.log(err)});
     res.status(200).json({ message: 'Post deleted successfully' })
   } catch (err) {
     console.error(err)

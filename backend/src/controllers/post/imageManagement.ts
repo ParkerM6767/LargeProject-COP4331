@@ -2,7 +2,7 @@ import multer from 'multer';
 import { Request, Response, NextFunction } from 'express';
 import path from 'node:path';
 
-const staticImgPath = import.meta.dirname + '/../../../public/images/posts';
+const staticImgPath = (import.meta.dirname) + '/../../../public/images/posts';
 
 export const storeImage = (req: Request, res: Response, next: NextFunction) => {
     const storage = multer.diskStorage({
