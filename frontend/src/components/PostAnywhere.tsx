@@ -4,6 +4,8 @@ import { Marker, useMapEvents } from "react-leaflet";
 import { Button } from "./ui/button";
 import { Dialog } from "./ui/dialog";
 import { AddEventModal } from "./AddEventModal";
+import { createEventIcon } from "./Map";
+import { useTheme } from "./ui/themes";
 
 export function PostAnywhere({
   user,
@@ -20,6 +22,7 @@ export function PostAnywhere({
   } | null>(null);
 
   const [showModal, setShowModal] = useState(false);
+  const { theme } = useTheme();
 
   useMapEvents({
     // Grab coordinates when the user right-clicks
@@ -39,7 +42,9 @@ export function PostAnywhere({
 
   return (
     <>
-      {postCoords && <Marker position={postCoords}></Marker>}
+      {postCoords && (
+        <Marker position={postCoords} icon={createEventIcon(theme === "dark")}></Marker>
+      )}
       {menuCoords && (
         <div
           className="relative z-1050 w-0 h-0 flex justify-center"
@@ -47,8 +52,9 @@ export function PostAnywhere({
         >
           <Button
             variant="outline"
+            className="disabled:opacity-100"
             onClick={(event) => {
-              console.log("clicked")
+              console.log("clicked");
               event.stopPropagation();
               setShowModal(true);
             }}

@@ -1,7 +1,8 @@
-import type { Map as MapType } from "leaflet";
+import { divIcon, type Map as MapType } from "leaflet";
 import { Suspense, useEffect, useRef, type PropsWithChildren } from "react";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { PostAnywhere } from "./PostAnywhere";
+import { useTheme } from "./ui/themes";
 
 export function Map({
   posts,
@@ -65,13 +66,41 @@ export function Map({
 // To use `Suspense` properly, the `use` has to happen in a separate component.
 // `use` in components is about the same as `await` in most cases
 function RenderPosts({ posts }: { posts: Post[] }) {
+  const { theme } = useTheme();
+
   return (
     <>
       {posts.map((post) => (
-        <Marker key={post._id} position={[post.latitude, post.longitude]}>
+        <Marker
+          key={post._id}
+          icon={createEventIcon(theme === "dark")}
+          position={[post.latitude, post.longitude]}
+        >
           <Popup>{post.description}</Popup>
         </Marker>
       ))}
     </>
   );
+}
+
+export function createEventIcon(darkmode: boolean) {
+  const color = darkmode ? "#171717" : "#ffc906";
+
+  const svg = `
+  <svg
+    fill="${color}"
+    viewBox="-64 0 512 512"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0zM192 272c44.183 0 80-35.817 80-80s-35.817-80-80-80-80 35.817-80 80 35.817 80 80 80z"></path>
+  </svg>
+  `;
+
+  return divIcon({
+    html: svg,
+    className: "event-marker",
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+    popupAnchor: [0, 0],
+  });
 }
