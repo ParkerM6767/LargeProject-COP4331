@@ -68,7 +68,6 @@ export async function createPost (req: Request, res: Response) {
       const newFileName = staticImagePath + post.id + path.extname(req.file.originalname);
       fs.rename(oldFileName, newFileName, (err) => {
         console.log(err);
-        res.status(500).json({ message: 'Failed to create post' });
       });
     }
 
