@@ -15,7 +15,7 @@ export async function getPosts (req: Request, res: Response) {
       .skip(skip)
       .limit(limit)
       .select(
-        'title description imageUrl longitude latitude upvote downvote createdAt creatorId'
+        'title description longitude latitude upvote downvote createdAt creatorId'
       )
 
     res.status(200).json({ message: 'Posts retrieved successfully', posts })
@@ -30,7 +30,7 @@ export async function getPostById (req: Request, res: Response) {
   try {
     const postId = req.params.id
     const post = await Post.findById(postId).select(
-      'title description imageUrl longitude latitude upvote downvote createdAt'
+      'title description longitude latitude upvote downvote createdAt'
     )
 
     if (!post) {
@@ -52,7 +52,7 @@ export async function getPostsByUserId (req: Request, res: Response) {
     const posts = await Post.find({ creatorId: userId })
       .sort({ createdAt: -1 })
       .select(
-        'title description imageUrl longitude latitude upvote downvote createdAt'
+        'title description longitude latitude upvote downvote createdAt'
       )
 
     if (!posts || posts.length === 0) {

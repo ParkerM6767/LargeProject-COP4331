@@ -7,7 +7,7 @@ const staticImagePath = (import.meta.dirname) + './../../../public/images/posts/
 // POST /
 export async function createPost (req: Request, res: Response) {
   try {
-    const { title, longitude, latitude, description, imageUrl } = JSON.parse(req.body.data)
+    const { title, longitude, latitude, description} = req.body;
     const userId = req.user
 
     if (!title || title.trim().length === 0) {
@@ -59,7 +59,6 @@ export async function createPost (req: Request, res: Response) {
       longitude,
       latitude,
       description,
-      imageUrl: imageUrl || '',
       creatorId: userId
     })
     // Change image name to post Id

@@ -9,7 +9,6 @@ export interface IPost extends Document {
   longitude: number
   latitude: number
   description: string
-  imageUrl: string
   creatorId: Types.ObjectId
 }
 
@@ -47,11 +46,6 @@ const PostSchema: Schema = new Schema(
     description: {
       type: String,
       required: true,
-      trim: true
-    },
-    imageUrl: {
-      type: String,
-      required: false,
       trim: true
     },
     creatorId: {

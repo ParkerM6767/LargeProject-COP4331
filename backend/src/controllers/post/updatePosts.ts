@@ -7,7 +7,7 @@ export async function updatePost (req: Request, res: Response) {
   try {
     const postId = req.params.id
     const post = await Post.findById(postId).select(
-      'title description imageUrl longitude latitude upvote downvote createdAt creatorId'
+      'title description longitude latitude upvote downvote createdAt creatorId'
     )
 
     if (!post) {
@@ -22,11 +22,10 @@ export async function updatePost (req: Request, res: Response) {
         .json({ message: 'Unauthorized to update this post' })
     }
 
-    const { title, description, imageUrl } = req.body
+    const { title, description } = req.body
 
     post.title = title || post.title
     post.description = description || post.description
-    post.imageUrl = imageUrl || post.imageUrl
 
     await post.save()
     res.status(200).json({ message: 'Post updated successfully', post })
