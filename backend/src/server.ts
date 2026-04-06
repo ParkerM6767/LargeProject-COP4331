@@ -3,6 +3,7 @@ import express from 'express'
 import cors from 'cors'
 import { connectDB } from './db'
 import dotenv from 'dotenv'
+import path from 'node:path'
 dotenv.config()
 
 // Express setup/dependencies
@@ -18,6 +19,7 @@ app.use(cors(corsOptions))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser());
+app.use(express.static(path.join(import.meta.dirname, '../public')));
 
 // Main routers
 import postrouter from './routes/postRoutes'

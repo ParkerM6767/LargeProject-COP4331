@@ -2,3 +2,4 @@ node_modules
 dist
 .env
 .vscode
+backend/public/images/posts/*
