@@ -18,7 +18,8 @@ const PostSchema: Schema = new Schema(
     title: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      maxlength: 100
     },
     upvote: {
       type: Number,
@@ -47,7 +48,8 @@ const PostSchema: Schema = new Schema(
     description: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      maxlength: 500
     },
     imageUrl: {
       type: String,
