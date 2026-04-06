@@ -1,10 +1,13 @@
 import { Request, Response } from 'express'
 import { Post } from '../../models/post.model'
+import fs from 'fs';
+import path from 'path';
+const staticImagePath = (import.meta.dirname) + './../../../public/images/posts/';
 
 // POST /
 export async function createPost (req: Request, res: Response) {
   try {
-    const { title, longitude, latitude, description, imageUrl } = req.body
+    const { title, longitude, latitude, description, imageUrl } = JSON.parse(req.body.data)
     const userId = req.user
 
     if (!title || title.trim().length === 0) {
@@ -59,6 +62,15 @@ export async function createPost (req: Request, res: Response) {
       imageUrl: imageUrl || '',
       creatorId: userId
     })
+    // Change image name to post Id
+    if(req.file){
+      const oldFileName = staticImagePath + req.file?.filename;
+      const newFileName = staticImagePath + post.id + path.extname(req.file.originalname);
+      fs.rename(oldFileName, newFileName, (err) => {
+        console.log(err);
+        res.status(500).json({ message: 'Failed to create post' });
+      });
+    }
 
     res.status(201).json({ message: 'Post created successfully', post })
   } catch (err) {

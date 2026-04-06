@@ -1,6 +1,8 @@
+// Router and middleware functions
 import { Router } from 'express'
 import { authMiddleware } from '../middleware/auth.middleware'
 
+// Post Functions
 import { createPost } from '../controllers/post/createPosts'
 import { getPosts, getPostById, getPostsByUserId } from '../controllers/post/getPosts'
 import {
@@ -10,9 +12,12 @@ import {
 } from '../controllers/post/updatePosts'
 import { deletePost } from '../controllers/post/deletePosts'
 
+// Misc. Functions
+import { storeImage } from '../controllers/post/imageManagement'
+
 const postrouter = Router()
 
-postrouter.post('/', authMiddleware, createPost)
+postrouter.post('/', authMiddleware, storeImage, createPost)
 postrouter.get('/', getPosts)
 postrouter.get('/my-posts', authMiddleware, getPostsByUserId)
 postrouter.get('/:id', getPostById)
