@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Marker, useMapEvent } from "react-leaflet";
+import { Marker, useMapEvents } from "react-leaflet";
 
 import { Button } from "./ui/button";
 import { Dialog } from "./ui/dialog";
@@ -21,51 +21,62 @@ export function PostAnywhere({
 
   const [showModal, setShowModal] = useState(false);
 
-  // Grab coordinates when the user right-clicks
-  useMapEvent("contextmenu", (event) => {
-    if (!user) return;
-
-    setMenuCoords({
-      left: event.containerPoint.x,
-      top: event.containerPoint.y,
-    });
-    setPostCoords(event.latlng);
+  useMapEvents({
+    // Grab coordinates when the user right-clicks
+    contextmenu: (event) => {
+      setMenuCoords({
+        left: event.containerPoint.x,
+        top: event.containerPoint.y,
+      });
+      setPostCoords(event.latlng);
+    },
+    // Clear the point when the user drags
+    drag: () => {
+      setMenuCoords(null);
+      setPostCoords(null);
+    },
   });
 
   return (
-    user && (
-      <>
-        {postCoords && <Marker position={postCoords}></Marker>}
-        {menuCoords && (
-          <div
-            className="relative z-1050 w-0 h-0 flex justify-center"
-            style={{ left: menuCoords.left, top: menuCoords.top + 8 }}
-          >
-            <Button variant="outline" onClick={() => setShowModal(true)}>
-              Create Post
-            </Button>
-          </div>
-        )}
-
-        <Dialog
-          open={showModal}
-          onOpenChange={(state) => {
-            if (state) {
-              setShowModal(true);
-            } else {
-              setShowModal(false);
-              setPostCoords(null);
-              setMenuCoords(null);
-            }
-          }}
+    <>
+      {postCoords && <Marker position={postCoords}></Marker>}
+      {menuCoords && (
+        <div
+          className="relative z-1050 w-0 h-0 flex justify-center"
+          style={{ left: menuCoords.left, top: menuCoords.top + 8 }}
         >
-          <AddEventModal
-            longitude={postCoords?.lng || null}
-            latitude={postCoords?.lat || null}
-            closeModal={() => setShowModal(false)}
-          />
-        </Dialog>
-      </>
-    )
+          <Button
+            variant="outline"
+            onClick={(event) => {
+              console.log("clicked")
+              event.stopPropagation();
+              setShowModal(true);
+            }}
+            disabled={user === null}
+          >
+            {user ? "Create Post" : "Log in to create a post"}
+          </Button>
+        </div>
+      )}
+
+      <Dialog
+        open={showModal}
+        onOpenChange={(state) => {
+          if (state) {
+            setShowModal(true);
+          } else {
+            setShowModal(false);
+            setPostCoords(null);
+            setMenuCoords(null);
+          }
+        }}
+      >
+        <AddEventModal
+          longitude={postCoords?.lng || null}
+          latitude={postCoords?.lat || null}
+          closeModal={() => setShowModal(false)}
+        />
+      </Dialog>
+    </>
   );
 }
