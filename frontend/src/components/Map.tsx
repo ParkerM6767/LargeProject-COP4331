@@ -43,9 +43,17 @@ export function Map({
         className="h-full"
         ref={mapRef}
       >
+        {/* Coloring for the map's dark mode */}
+        <style>{`
+          .dark .map-tiles {
+            filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+          }
+        `}</style>
+
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          className="map-tiles"
         />
 
         {/* Allow the map to show while posts are being loaded */}
@@ -84,7 +92,8 @@ function RenderPosts({ posts }: { posts: Post[] }) {
 }
 
 export function createEventIcon(darkmode: boolean) {
-  const color = darkmode ? "#171717" : "#ffc906";
+  // Gold on dark mode, black on light mode
+  const color = darkmode ? "#ffc906" : "#171717";
 
   const svg = `
   <svg
