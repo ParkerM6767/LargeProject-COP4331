@@ -36,6 +36,7 @@ export function Map({
         ]}
         maxBoundsViscosity={1}
         zoom={16}
+        minZoom={13}
         zoomControl={false}
         doubleClickZoom={false}
         className="h-full"
