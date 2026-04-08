@@ -1,5 +1,12 @@
 import { LucideSidebarClose, LucideSidebarOpen, Search } from "lucide-react";
+import { Suspense, useState } from "react";
+import blackLogo from "../assets/black-ucf-logo.png";
+import plus from "../assets/plus.svg";
+import yellowPlus from "../assets/yellow-plus.svg";
+import yellowLogo from "../assets/yellow-ucf-logo.png";
+import { AddEventModal } from "./AddEventModal";
 import { Button } from "./ui/button";
+import { Dialog, DialogTrigger } from "./ui/dialog";
 import {
   Sidebar,
   SidebarContent,
@@ -7,70 +14,85 @@ import {
   SidebarHeader,
   useSidebar,
 } from "./ui/shad-sidebar";
-import {
-  Dialog,
-  DialogTrigger
-} from "./ui/dialog";
-import { Suspense } from "react";
 import { Skeleton } from "./ui/skeleton";
-import { AddEventModal } from "./AddEventModal";
-import yellowPlus from "../assets/yellow-plus.svg"
-import yellowLogo from "../assets/yellow-ucf-logo.png"
-import blackLogo from "../assets/black-ucf-logo.png"
-import plus from "../assets/plus.svg"
-
 import { Input } from "./ui/input";
+import { useGeolocation } from "../lib/hooks";
 
-export function PostSidebar({ posts, user }: { posts: Post[]; user: { firstName: string; lastName: string } | null}) {
+export function PostSidebar({
+  posts,
+  user,
+}: {
+  posts: Post[];
+  user: { firstName: string; lastName: string } | null;
+}) {
+  const [showModal, setShowModal] = useState(false);
+
+  const { coords, getLocation, clearCoords } = useGeolocation();
+  // What should we do if the user rejects?
+
   return (
     <Sidebar>
       <SidebarHeader className="flex items-center">
-        <img 
+        <img
           src={blackLogo}
           width={250}
           height={250}
           className="block dark:hidden"
         />
-        <img 
+        <img
           src={yellowLogo}
           width={250}
           height={250}
           className="hidden dark:block"
         />
-        <h1 className="text-3xl semi-bold text-center px-6">Campus Community Report</h1>
+        <h1 className="text-3xl semi-bold text-center px-6">
+          Campus Community Report
+        </h1>
       </SidebarHeader>
       <SidebarContent>
         <div className="relative  mx-4 w-[18rem]  mt-2">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-black w-8 h-8" />
-          <Input 
+          <Input
             type="text"
             placeholder="Search"
             className="h-[5vh] pl-13 text-black dark:text-white text-xl! placeholder:text-xl placeholder:text-black dark:placeholder:text-white rounded-md border-none bg-white dark:bg-zinc-500"
           />
         </div>
         {user && (
-          <Dialog>
+          <Dialog
+            open={showModal}
+            onOpenChange={(state) => {
+              if (state) {
+                setShowModal(true);
+                getLocation();
+              } else {
+                setShowModal(false);
+                clearCoords();
+              }
+            }}
+          >
             <DialogTrigger asChild>
-              <Button
-                size="lg"
-                className=" mx-4 my-6 text-2xl"
-              >
-                <img 
-                  src={plus} 
-                  width={50} 
-                  height={50} 
+              <Button size="lg" className=" mx-4 my-6 text-2xl">
+                <img
+                  src={plus}
+                  width={50}
+                  height={50}
                   className="block dark:hidden"
                 />
-                <img 
-                  src={yellowPlus} 
-                  width={50} 
-                  height={50} 
+                <img
+                  src={yellowPlus}
+                  width={50}
+                  height={50}
                   className="hidden dark:block"
                 />
                 Post Event
               </Button>
             </DialogTrigger>
-            <AddEventModal/>
+            <AddEventModal
+              latitude={coords?.lat ?? null}
+              longitude={coords?.lng ?? null}
+              closeModal={() => setShowModal(false)}
+            />
           </Dialog>
         )}
         <Suspense fallback={<PostGlimmers />}>
@@ -92,12 +114,14 @@ export function PostSidebar({ posts, user }: { posts: Post[]; user: { firstName:
  * Display all the posts loaded, optionally with a filter in the future
  */
 function ListPosts({ posts }: { posts: Post[] }) {
-
   return (
     <>
       {posts.map((post) => (
-        <div key={post.description} className="p-4 mx-4 mt-4 border border-muted-foreground rounded-md">
-          <img src={post.image}/>
+        <div
+          key={post.description}
+          className="p-4 mx-4 mt-4 border border-muted-foreground rounded-md"
+        >
+          <img src={post.image} />
           <div>
             <p>{post.title}</p>
             <p>{post.description}</p>

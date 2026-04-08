@@ -18,7 +18,10 @@ import { logout } from "./lib/fetch";
 const fetchedPosts = await fetchPosts();
 
 function App() {
-  const [user, setUser] = useState<{ firstName: string; lastName: string } | null>(null);
+  const [user, setUser] = useState<{
+    firstName: string;
+    lastName: string;
+  } | null>(null);
 
   return (
     <SidebarProvider className="w-screen h-screen absolute top-0 left-0">
@@ -27,7 +30,7 @@ function App() {
       <SidebarInset>
         {/* Everything that gets moved by the sidebar goes below */}
 
-        <Map posts={fetchedPosts}>
+        <Map posts={fetchedPosts} user={user}>
           <div className="flex gap-2">
             <SideBarToggle />
             <MapZoom />
@@ -36,7 +39,10 @@ function App() {
 
           {user ? (
             <Button
-              onClick={() => { logout(); setUser(null); }}
+              onClick={() => {
+                logout();
+                setUser(null);
+              }}
               size="lg"
               className="absolute top-6 right-10 p-4 w-[8rem] h-[3rem] text-2xl inset-shadow-[0_2px_8px_rgba(0,0,0,0.2)] shadow-[0_0_10px_rgba(0,0,0,.5)]  shadow-white"
             >
@@ -45,9 +51,7 @@ function App() {
           ) : (
             <Dialog>
               <DialogTrigger asChild>
-                <Button
-                  className="absolute top-6 right-10 p-4 w-[8rem] h-[3rem] text-2xl inset-shadow-[0_2px_8px_rgba(0,0,0,0.2)] shadow-[0_0_10px_rgba(0,0,0,.5)]  shadow-white"
-                >
+                <Button className="absolute top-6 right-10 p-4 w-[8rem] h-[3rem] text-2xl inset-shadow-[0_2px_8px_rgba(0,0,0,0.2)] shadow-[0_0_10px_rgba(0,0,0,.5)]  shadow-white">
                   Login
                 </Button>
               </DialogTrigger>
