@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button } from "./ui/button";
 import {
   DialogContent,
@@ -12,6 +12,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { submitPost } from "../lib/fetch";
+import { PostContext } from "../lib/postContext";
 
 async function uploadPost(payload: EventForm) {
   // TODO: verify the post was submitted and have error feedback
@@ -32,6 +33,7 @@ export function AddEventModal({
   const [description, setDescription] = useState<string>("");
 
   const [isSending, setSending] = useState(false);
+  const { refresh } = useContext(PostContext);
 
   return (
     <>
@@ -98,6 +100,8 @@ export function AddEventModal({
                 })
                   // Close the modal when sent
                   .then(closeModal)
+                  // Once posted, update all posts
+                  .then(refresh)
                   // Un-disable the button
                   .finally(() => setSending(false));
               }}
