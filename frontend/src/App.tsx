@@ -9,13 +9,10 @@ import { Dialog, DialogTrigger } from "./components/ui/dialog";
 import { PostSidebar, SideBarToggle } from "./components/PostSidebar";
 import { SidebarInset, SidebarProvider } from "./components/ui/shad-sidebar";
 import { ModeToggle } from "./components/ui/themes";
-import { fetchPosts } from "./lib/fetch";
 import { logout } from "./lib/fetch";
 
 // const UCFLong = 28.60235;
 // const UCFLat = -81.2002;
-
-const fetchedPosts = await fetchPosts();
 
 function App() {
   const [user, setUser] = useState<{
@@ -25,12 +22,12 @@ function App() {
 
   return (
     <SidebarProvider className="w-screen h-screen absolute top-0 left-0">
-      <PostSidebar posts={fetchedPosts} user={user} />
+      <PostSidebar user={user} />
 
       <SidebarInset>
         {/* Everything that gets moved by the sidebar goes below */}
 
-        <Map posts={fetchedPosts} user={user}>
+        <Map user={user}>
           <div className="flex gap-2">
             <SideBarToggle />
             <MapZoom />

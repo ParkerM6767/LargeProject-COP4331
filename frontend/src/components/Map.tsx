@@ -1,19 +1,28 @@
 import { divIcon, type Map as MapType } from "leaflet";
-import { Suspense, useEffect, useRef, type PropsWithChildren } from "react";
+import {
+  Suspense,
+  useContext,
+  useEffect,
+  useRef,
+  type PropsWithChildren,
+} from "react";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { PostContext } from "../lib/postContext";
 import { PostAnywhere } from "./PostAnywhere";
 import { useTheme } from "./ui/themes";
 
 export function Map({
-  posts,
+  // posts,
   user,
   children,
 }: PropsWithChildren<{
-  posts: Post[];
+  // posts: Post[];
   user: { firstName: string; lastName: string } | null;
 }>) {
   const mapRef = useRef<MapType>(null);
   const divRef = useRef<HTMLDivElement>(null);
+
+  const { posts } = useContext(PostContext);
 
   // Leaflet doesn't recognize resizes on its own, so
   // we have to help with an observer
@@ -83,6 +92,7 @@ function RenderPosts({ posts }: { posts: Post[] }) {
           key={post._id}
           icon={createEventIcon(theme === "dark")}
           position={[post.latitude, post.longitude]}
+          
         >
           <Popup>{post.description}</Popup>
         </Marker>
