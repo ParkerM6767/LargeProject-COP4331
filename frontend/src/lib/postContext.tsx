@@ -43,6 +43,7 @@ export function PostProvider({
 
     fetchPosts(search, page, limit).then((newPosts) => {
       if (!currentFetch) return;
+      console.log(newPosts)
       setPosts(newPosts);
     });
 

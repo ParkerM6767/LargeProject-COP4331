@@ -18,6 +18,7 @@ import { Skeleton } from "./ui/skeleton";
 import { Input } from "./ui/input";
 import { useGeolocation } from "../lib/hooks";
 import { PostContext } from "../lib/postContext";
+import { SidebarPagination } from "./SidebarPagination";
 
 export function PostSidebar({
   // posts,
@@ -27,7 +28,7 @@ export function PostSidebar({
   user: { firstName: string; lastName: string } | null;
 }) {
   const [showModal, setShowModal] = useState(false);
-  const { posts, setSearch } = useContext(PostContext);
+  const { posts, setSearch, setPage } = useContext(PostContext);
 
   const { coords, getLocation, clearCoords } = useGeolocation();
   // What should we do if the user rejects?
@@ -57,50 +58,58 @@ export function PostSidebar({
           <Input
             type="text"
             placeholder="Search"
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             className="h-[5vh] pl-13 text-black dark:text-white text-xl! placeholder:text-xl placeholder:text-black dark:placeholder:text-white rounded-md border-none bg-white dark:bg-zinc-500"
           />
         </div>
-        {user && (
-          <Dialog
-            open={showModal}
-            onOpenChange={(state) => {
-              if (state) {
-                setShowModal(true);
-                getLocation();
-              } else {
-                setShowModal(false);
-                clearCoords();
-              }
-            }}
-          >
-            <DialogTrigger asChild>
-              <Button size="lg" className=" mx-4 my-6 text-2xl">
-                <img
-                  src={plus}
-                  width={50}
-                  height={50}
-                  className="block dark:hidden"
-                />
-                <img
-                  src={yellowPlus}
-                  width={50}
-                  height={50}
-                  className="hidden dark:block"
-                />
-                Post Event
-              </Button>
-            </DialogTrigger>
-            <AddEventModal
-              latitude={coords?.lat ?? null}
-              longitude={coords?.lng ?? null}
-              closeModal={() => setShowModal(false)}
-            />
-          </Dialog>
-        )}
-        <Suspense fallback={<PostGlimmers />}>
-          <ListPosts posts={posts} />
-        </Suspense>
+
+        <SidebarPagination />
+
+        <div className="overflow-auto">
+          {user && (
+            <Dialog
+              open={showModal}
+              onOpenChange={(state) => {
+                if (state) {
+                  setShowModal(true);
+                  getLocation();
+                } else {
+                  setShowModal(false);
+                  clearCoords();
+                }
+              }}
+            >
+              <DialogTrigger asChild>
+                <Button size="lg" className=" mx-4 my-6 text-2xl">
+                  <img
+                    src={plus}
+                    width={50}
+                    height={50}
+                    className="block dark:hidden"
+                  />
+                  <img
+                    src={yellowPlus}
+                    width={50}
+                    height={50}
+                    className="hidden dark:block"
+                  />
+                  Post Event
+                </Button>
+              </DialogTrigger>
+              <AddEventModal
+                latitude={coords?.lat ?? null}
+                longitude={coords?.lng ?? null}
+                closeModal={() => setShowModal(false)}
+              />
+            </Dialog>
+          )}
+          <Suspense fallback={<PostGlimmers />}>
+            <ListPosts posts={posts} />
+          </Suspense>
+        </div>
       </SidebarContent>
       <SidebarFooter>
         {user && (
