@@ -12,7 +12,7 @@ export const PostContext = createContext<{
   totalPages: number;
   setPage: (page: number) => void;
   setSearch: (search: string) => void;
-  refresh: () => void;
+  refetch: () => void;
 }>({
   posts: [],
   page: -1,
@@ -23,7 +23,7 @@ export const PostContext = createContext<{
   setSearch: () => {
     throw new Error("`PostProvider` not found in the React tree!");
   },
-  refresh: () => {
+  refetch: () => {
     throw new Error("`PostProvider` not found in the React tree!");
   },
 });
@@ -56,13 +56,13 @@ export function PostProvider({
     };
   }, [search, page, limit, key]);
 
-  function refresh() {
+  function refetch() {
     setKey((k) => k + 1);
   }
 
   return (
     <PostContext.Provider
-      value={{ posts, totalPages, page, setPage, setSearch, refresh }}
+      value={{ posts, totalPages, page, setPage, setSearch, refetch }}
     >
       {children}
     </PostContext.Provider>

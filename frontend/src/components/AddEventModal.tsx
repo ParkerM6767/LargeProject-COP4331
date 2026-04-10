@@ -33,7 +33,7 @@ export function AddEventModal({
   const [description, setDescription] = useState<string>("");
 
   const [isSending, setSending] = useState(false);
-  const { refresh } = useContext(PostContext);
+  const { refetch } = useContext(PostContext);
 
   return (
     <>
@@ -101,7 +101,7 @@ export function AddEventModal({
                   // Close the modal when sent
                   .then(closeModal)
                   // Once posted, update all posts
-                  .then(refresh)
+                  .then(refetch)
                   // Un-disable the button
                   .finally(() => setSending(false));
               }}
