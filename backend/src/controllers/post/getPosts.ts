@@ -15,10 +15,11 @@ export async function getPosts (req: Request, res: Response) {
       .skip(skip)
       .limit(limit)
       .select(
-        'title description imageUrl longitude latitude upvote downvote createdAt creatorId'
-      )
+        'title description imageUrl longitude latitude upvote downvote createdAt creatorId',
+      );
+    const count = await Post.find(filter).countDocuments();
 
-    res.status(200).json({ message: 'Posts retrieved successfully', posts })
+    res.status(200).json({ message: 'Posts retrieved successfully', posts, count })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Failed to get posts' })

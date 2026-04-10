@@ -9,12 +9,14 @@ import { fetchPosts } from "./fetch";
 export const PostContext = createContext<{
   posts: Post[];
   page: number;
+  totalPages: number;
   setPage: (page: number) => void;
   setSearch: (search: string) => void;
   refresh: () => void;
 }>({
   posts: [],
   page: -1,
+  totalPages: -1,
   setPage: () => {
     throw new Error("`PostProvider` not found in the React tree!");
   },
@@ -32,6 +34,7 @@ export function PostProvider({
 }: PropsWithChildren<{ limit?: number }>) {
   const [search, setSearch] = useState("");
   const [posts, setPosts] = useState<Post[]>([]);
+  const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
 
   // A trick to force a refresh when needed
@@ -41,10 +44,11 @@ export function PostProvider({
     // Flag to mark the most recent fetch
     let currentFetch = true;
 
-    fetchPosts(search, page, limit).then((newPosts) => {
+    fetchPosts(search, page, limit).then(({ posts, totalPosts }) => {
       if (!currentFetch) return;
-      console.log(newPosts)
-      setPosts(newPosts);
+
+      setPosts(posts);
+      setTotalPages(Math.ceil(totalPosts / limit));
     });
 
     return () => {
@@ -57,7 +61,9 @@ export function PostProvider({
   }
 
   return (
-    <PostContext.Provider value={{ posts, page, setPage, setSearch, refresh }}>
+    <PostContext.Provider
+      value={{ posts, totalPages, page, setPage, setSearch, refresh }}
+    >
       {children}
     </PostContext.Provider>
   );

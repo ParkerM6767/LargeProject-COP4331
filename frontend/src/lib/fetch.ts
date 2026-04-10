@@ -76,7 +76,7 @@ export async function fetchPosts(
   search: string = "",
   page: number = 0,
   limit: number = 0,
-): Promise<Post[]> {
+): Promise<{ posts: Post[]; totalPosts: number }> {
   try {
     const url = new URL("http://localhost:8000/api/posts");
     url.searchParams.append("search", search);
@@ -92,7 +92,7 @@ export async function fetchPosts(
       throw new Error(`Error status: ${response.status}`);
     }
     const data = await response.json();
-    return data.posts;
+    return { posts: data.posts, totalPosts: data.count };
   } catch (error) {
     console.error("Fetch Posts failed:", error);
     throw error;

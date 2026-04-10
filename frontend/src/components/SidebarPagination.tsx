@@ -10,8 +10,7 @@ import {
 } from "./ui/pagination";
 
 export function SidebarPagination() {
-  const { page, pageMax = 10, setPage } = useContext(PostContext);
-  // TODO: once the number of posts can be gotten, use it here to jump to end
+  const { page, totalPages, setPage } = useContext(PostContext);
 
   return (
     <Pagination>
@@ -63,7 +62,7 @@ export function SidebarPagination() {
 
         {/* Current+1, show if not on last page */}
         <PaginationItem
-          className={cn(page !== pageMax || "invisible *:transition-none")}
+          className={cn(page !== totalPages || "invisible *:transition-none")}
         >
           <PaginationLink
             className="border rounded-md border-primary-foreground"
@@ -77,19 +76,19 @@ export function SidebarPagination() {
         {/* Some amount of pages between the current+1 and last, 
             shows when X < N-1 for 1/.../X-1/X/X+1/.../N  */}
         <PaginationEllipsis
-          className={cn(page < pageMax - 1 || "invisible *:transition-none")}
+          className={cn(page < totalPages - 1 || "invisible *:transition-none")}
         />
 
         {/* Last page */}
         <PaginationItem
-          className={cn(page < pageMax - 1 || "invisible *:transition-none")}
+          className={cn(page < totalPages - 1 || "invisible *:transition-none")}
         >
           <PaginationLink
             className="border rounded-md border-primary-foreground"
             size={"sm"}
-            onClick={() => setPage(pageMax)}
+            onClick={() => setPage(totalPages)}
           >
-            {pageMax}
+            {totalPages}
           </PaginationLink>
         </PaginationItem>
       </PaginationContent>
