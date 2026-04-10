@@ -1,5 +1,5 @@
 import { LucideSidebarClose, LucideSidebarOpen, Search } from "lucide-react";
-import { Suspense, useState } from "react";
+import { Suspense, useContext, useState } from "react";
 import blackLogo from "../assets/black-ucf-logo.png";
 import plus from "../assets/plus.svg";
 import yellowPlus from "../assets/yellow-plus.svg";
@@ -17,15 +17,18 @@ import {
 import { Skeleton } from "./ui/skeleton";
 import { Input } from "./ui/input";
 import { useGeolocation } from "../lib/hooks";
+import { PostContext } from "../lib/postContext";
+import { SidebarPagination } from "./SidebarPagination";
 
 export function PostSidebar({
-  posts,
+  // posts,
   user,
 }: {
-  posts: Post[];
+  // posts: Post[];
   user: { firstName: string; lastName: string } | null;
 }) {
   const [showModal, setShowModal] = useState(false);
+  const { posts, setSearch, setPage } = useContext(PostContext);
 
   const { coords, getLocation, clearCoords } = useGeolocation();
   // What should we do if the user rejects?
@@ -55,49 +58,58 @@ export function PostSidebar({
           <Input
             type="text"
             placeholder="Search"
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             className="h-[5vh] pl-13 text-black dark:text-white text-xl! placeholder:text-xl placeholder:text-black dark:placeholder:text-white rounded-md border-none bg-white dark:bg-zinc-500"
           />
         </div>
-        {user && (
-          <Dialog
-            open={showModal}
-            onOpenChange={(state) => {
-              if (state) {
-                setShowModal(true);
-                getLocation();
-              } else {
-                setShowModal(false);
-                clearCoords();
-              }
-            }}
-          >
-            <DialogTrigger asChild>
-              <Button size="lg" className=" mx-4 my-6 text-2xl">
-                <img
-                  src={plus}
-                  width={50}
-                  height={50}
-                  className="block dark:hidden"
-                />
-                <img
-                  src={yellowPlus}
-                  width={50}
-                  height={50}
-                  className="hidden dark:block"
-                />
-                Post Event
-              </Button>
-            </DialogTrigger>
-            <AddEventModal
-              latitude={coords?.lat ?? null}
-              longitude={coords?.lng ?? null}
-              closeModal={() => setShowModal(false)}
-            />
-          </Dialog>
-        )}
-        <Suspense fallback={<PostGlimmers />}>
-          <ListPosts posts={posts} />
-        </Suspense>
+
+        <SidebarPagination />
+
+        <div className="overflow-auto">
+          {user && (
+            <Dialog
+              open={showModal}
+              onOpenChange={(state) => {
+                if (state) {
+                  setShowModal(true);
+                  getLocation();
+                } else {
+                  setShowModal(false);
+                  clearCoords();
+                }
+              }}
+            >
+              <DialogTrigger asChild>
+                <Button size="lg" className=" mx-4 my-6 text-2xl">
+                  <img
+                    src={plus}
+                    width={50}
+                    height={50}
+                    className="block dark:hidden"
+                  />
+                  <img
+                    src={yellowPlus}
+                    width={50}
+                    height={50}
+                    className="hidden dark:block"
+                  />
+                  Post Event
+                </Button>
+              </DialogTrigger>
+              <AddEventModal
+                latitude={coords?.lat ?? null}
+                longitude={coords?.lng ?? null}
+                closeModal={() => setShowModal(false)}
+              />
+            </Dialog>
+          )}
+          <Suspense fallback={<PostGlimmers />}>
+            <ListPosts posts={posts} />
+          </Suspense>
+        </div>
       </SidebarContent>
       <SidebarFooter>
         {user && (
@@ -118,7 +130,7 @@ function ListPosts({ posts }: { posts: Post[] }) {
     <>
       {posts.map((post) => (
         <div
-          key={post.description}
+          key={post._id}
           className="p-4 mx-4 mt-4 border border-muted-foreground rounded-md"
         >
           <img src={post.image} />
