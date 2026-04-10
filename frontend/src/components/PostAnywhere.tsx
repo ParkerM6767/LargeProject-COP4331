@@ -43,7 +43,10 @@ export function PostAnywhere({
   return (
     <>
       {postCoords && (
-        <Marker position={postCoords} icon={createEventIcon(theme === "dark")}></Marker>
+        <Marker
+          position={postCoords}
+          icon={createEventIcon(theme === "dark")}
+        ></Marker>
       )}
       {menuCoords && (
         <div
@@ -80,7 +83,11 @@ export function PostAnywhere({
         <AddEventModal
           longitude={postCoords?.lng || null}
           latitude={postCoords?.lat || null}
-          closeModal={() => setShowModal(false)}
+          closeModal={() => {
+            setShowModal(false);
+            setPostCoords(null);
+            setMenuCoords(null);
+          }}
         />
       </Dialog>
     </>
