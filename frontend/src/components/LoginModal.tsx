@@ -9,10 +9,13 @@ import {
 import { Button } from "./ui/button";
 
 interface ModalProps {
-  onLoginSuccess: (user: { firstName: string; lastName: string }) => void;
+  onLoginSuccess: (user: { firstName: string; lastName: string, email: string }) => void;
+  setVerifyOpen: (open: boolean) => void;
+  setLoginOpen: (open: boolean) => void;
+  setResetOpen: (open: boolean) => void;
 }
 
-export function LoginModal({ onLoginSuccess }: ModalProps) {
+export function LoginModal({ onLoginSuccess, setVerifyOpen, setLoginOpen, setResetOpen }: ModalProps) {
   const [loggingIn, setLoggingIn] = useState<boolean>(true);
 
   const [firstName, setFirstName] = useState<string>("");
@@ -20,6 +23,7 @@ export function LoginModal({ onLoginSuccess }: ModalProps) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   function loginPayload(email: string, password: string): LoginForm {
     const payload = {
@@ -54,10 +58,21 @@ export function LoginModal({ onLoginSuccess }: ModalProps) {
       } else {
         data = await signup(signupPayload(firstName, lastName, email, password));
       }
-      onLoginSuccess({ firstName: data.firstName, lastName: data.lastName });
-    } catch (error) {
-      console.error("Error:", error);
+      onLoginSuccess({ firstName: data.firstName, lastName: data.lastName, email: data.email });
+    } catch (error: any) {
+      if (error.status === 403 || error.response?.status === 403) {
+        setLoginOpen(false);
+        setVerifyOpen(true);
+      } else if (error.message === "invalid password") {
+        setErrorMessage(error.message)
+      }
+      console.error("Error:", error.message);
     }
+  }
+
+  function openResetModal() {
+    setLoginOpen(false)
+    setResetOpen(true)
   }
 
   return (
@@ -87,6 +102,9 @@ export function LoginModal({ onLoginSuccess }: ModalProps) {
             />
           </>
         )}
+        <div className="flex justify-center text-red-500">
+          <p>{errorMessage}</p>
+        </div>
         <input
           className="border rounded p-2"
           value={email}
@@ -101,6 +119,15 @@ export function LoginModal({ onLoginSuccess }: ModalProps) {
           type="password"
           placeholder="Password"
         />
+        {errorMessage === "invalid password" && (
+          <a 
+            className="underline text-blue-500 select-none" 
+            href="#"
+            onClick={openResetModal}
+          >
+            Forgot password?
+          </a>
+        )}
         {loggingIn === false && (
           <>
             <input

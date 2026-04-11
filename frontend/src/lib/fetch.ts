@@ -6,11 +6,17 @@ export async function login(payload: LoginForm) {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(payload)
         });
-    if (!response.ok) {
-        throw new Error(`Error status: ${response.status}`);
-    }
 
-    return await response.json();
+        const data = await response.json();
+
+        if (!response.ok) {
+            const err = new Error();
+            (err as any).message = data.message;
+            (err as any).status = response.status;
+            throw err;
+        }
+
+        return data
 
     } catch(error) {
         console.error("Login Failed:", error);
@@ -24,11 +30,11 @@ export async function logout() {
             method: "POST",
             credentials: "include",
         });
-    if (!response.ok) {
-        throw new Error(`Error status: ${response.status}`);
-    }
+        if (!response.ok) {
+            throw new Error(`Error status: ${response.status}`);
+        }
 
-    return await response.json();
+        return await response.json();
 
     } catch(error) {
         console.error("Login Failed:", error);
@@ -44,14 +50,13 @@ export async function signup(payload: SignupForm) {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(payload),
         });
-    if (!response.ok) {
-        throw new Error(`Error status: ${response.status}`);
-    }
+        if (!response.ok) {
+            throw new Error(`Error status: ${response.status}`);
+        }
 
-    return await response.json();
-
+        return await response.json();
     } catch(error) {
-        console.error("Login Failed:", error);
+        console.error("Signup Failed:", error);
         throw error;
     }
 }
@@ -64,11 +69,11 @@ export async function submitPost(payload: EventForm) {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(payload)
         });
-    if (!response.ok) {
-        throw new Error(`Error status: ${response.status}`);
-    }
+        if (!response.ok) {
+            throw new Error(`Error status: ${response.status}`);
+        }
 
-    return await response.json();
+        return await response.json();
 
     } catch(error) {
         console.error("Post submission failed:", error);
@@ -82,14 +87,57 @@ export async function fetchPosts(): Promise<Post[]> {
             method: "GET",
             credentials: "include"
         });
-    if (!response.ok) {
-        throw new Error(`Error status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data.posts;
+        if (!response.ok) {
+            throw new Error(`Error status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.posts;
 
     } catch(error) {
         console.error("Fetch Posts failed:", error);
+        throw error;
+    }
+}
+
+export async function verify( email: string | null, code: string | null) {
+    try {
+        const response = await fetch("http://localhost:8000/api/users/verify-email", {
+            method: "POST",
+            credentials: "include",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                email: email,
+                code: code
+            })
+        });
+        if (!response.ok) {
+            throw new Error(`Error status: ${response.status}`);
+        }
+        return await response.json();
+
+    } catch(error) {
+        console.error("Verification failed:", error);
+        throw error;
+    }
+}
+
+export async function forgotPassword( email: string | null) {
+    try {
+        const response = await fetch("http://localhost:8000/api/users/verify-email", {
+            method: "POST",
+            credentials: "include",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                email: email
+            })
+        });
+        if (!response.ok) {
+            throw new Error(`Error status: ${response.status}`);
+        }
+        return await response.json();
+
+    } catch(error) {
+        console.error("Reset failed:", error);
         throw error;
     }
 }
