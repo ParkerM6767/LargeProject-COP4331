@@ -20,6 +20,37 @@ function App() {
     lastName: string;
   } | null>(null);
 
+  let inBrowser = true;
+
+  // Detect user agent for mobile app and hide react buttons if on mobile
+  if (navigator.userAgent.includes("soracl")) {
+    inBrowser = false;
+  }
+
+  function LoginButton() {
+    return (user ? (
+      <Button
+        onClick={() => {
+          logout();
+          setUser(null);
+        }}
+        size="lg"
+        className="absolute top-6 right-10 p-4 w-[8rem] h-[3rem] text-2xl inset-shadow-[0_2px_8px_rgba(0,0,0,0.2)] shadow-[0_0_10px_rgba(0,0,0,.5)]  shadow-white"
+      >
+        Logout
+      </Button>
+    ) : (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button className="absolute top-6 right-10 p-4 w-[8rem] h-[3rem] text-2xl inset-shadow-[0_2px_8px_rgba(0,0,0,0.2)] shadow-[0_0_10px_rgba(0,0,0,.5)]  shadow-white">
+            Login
+          </Button>
+        </DialogTrigger>
+        <LoginModal onLoginSuccess={(userData) => setUser(userData)} />
+      </Dialog>
+    ))
+  }
+
   return (
     <SidebarProvider className="w-screen h-screen absolute top-0 left-0">
       <PostSidebar user={user} />
@@ -34,27 +65,7 @@ function App() {
             <ModeToggle />
           </div>
 
-          {user ? (
-            <Button
-              onClick={() => {
-                logout();
-                setUser(null);
-              }}
-              size="lg"
-              className="absolute top-6 right-10 p-4 w-[8rem] h-[3rem] text-2xl inset-shadow-[0_2px_8px_rgba(0,0,0,0.2)] shadow-[0_0_10px_rgba(0,0,0,.5)]  shadow-white"
-            >
-              Logout
-            </Button>
-          ) : (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="absolute top-6 right-10 p-4 w-[8rem] h-[3rem] text-2xl inset-shadow-[0_2px_8px_rgba(0,0,0,0.2)] shadow-[0_0_10px_rgba(0,0,0,.5)]  shadow-white">
-                  Login
-                </Button>
-              </DialogTrigger>
-              <LoginModal onLoginSuccess={(userData) => setUser(userData)} />
-            </Dialog>
-          )}
+          {inBrowser ? <LoginButton /> : null}
         </Map>
       </SidebarInset>
     </SidebarProvider>
