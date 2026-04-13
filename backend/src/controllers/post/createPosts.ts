@@ -33,24 +33,24 @@ export async function createPost (req: Request, res: Response) {
         .json({ message: 'Longitude and latitude must be numbers' })
     }
 
-    const topLeft = process.env.TOP_LEFT_CORNER_BOUNDS?.split(',')
-    const bottomRight = process.env.BOTTOM_RIGHT_CORNER_BOUNDS?.split(',')
+    const topRight = process.env.TOP_RIGHT_CORNER_BOUNDS?.split(',')
+    const bottomLeft = process.env.BOTTOM_LEFT_CORNER_BOUNDS?.split(',')
 
     if (
-      !topLeft ||
-      !bottomRight ||
-      topLeft.length !== 2 ||
-      bottomRight.length !== 2
+      !topRight ||
+      !bottomLeft ||
+      topRight.length !== 2 ||
+      bottomLeft.length !== 2
     ) {
       throw new Error('Invalid map boundaries')
     }
 
-    const [maxLat, minLng] = topLeft.map(Number)
-    const [minLat, maxLng] = bottomRight.map(Number)
+    const [maxLat, maxLng] = topRight.map(Number)
+    const [minLat, minLng] = bottomLeft.map(Number)
 
     if (
-      longitude < maxLng ||
-      longitude > minLng ||
+      longitude > maxLng ||
+      longitude < minLng ||
       latitude < minLat ||
       latitude > maxLat
     ) {

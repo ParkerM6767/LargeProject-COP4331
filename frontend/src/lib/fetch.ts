@@ -61,19 +61,18 @@ export async function signup(payload: SignupForm) {
     }
 }
 
-export async function submitPost(payload: EventForm) {
+export async function submitPost(payload: FormData): Promise<EventFormResponse> {
     try {
         const response = await fetch("http://localhost:8000/api/posts", {
             method: "POST",
             credentials: "include",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(payload)
+            body: payload
         });
         if (!response.ok) {
             throw new Error(`Error status: ${response.status}`);
         }
 
-        return await response.json();
+        return await response.json() as Promise<EventFormResponse>;
 
     } catch(error) {
         console.error("Post submission failed:", error);

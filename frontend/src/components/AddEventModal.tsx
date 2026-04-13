@@ -13,19 +13,32 @@ import { Label } from "./ui/label"
 import { Textarea } from "./ui/textarea";
 import { submitPost } from "../lib/fetch";
 
-function uploadPost(payload: EventForm) {
+function uploadPost(
+    title: string,
+    longitude: number,
+    latitude: number,
+    imageFile: File | null,
+    description: string
+) {
     try {
-        submitPost(payload)
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("longitude", String(longitude));
+        formData.append("latitude", String(latitude));
+        formData.append("description", description);
+        if (imageFile) {
+            formData.append("image", imageFile);
+        }
+        submitPost(formData);
     } catch (error) {
         console.error("Upload Failed:", error);
     }
 }
-
 export function AddEventModal() {
     const [title, setTitle] = useState<string>('');
     const [longitude, setLongitude] = useState<number>(0);
     const [latitude, setLatitude] = useState<number>(0);
-    const [imageUrl, setImageUrl] = useState<string>('');
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [description, setDescription] = useState<string>('');
 
     return(
@@ -52,6 +65,8 @@ export function AddEventModal() {
                                 onChange={(e) => setLongitude(parseFloat(e.target.value))}
                                 type="number"
                             />
+                        </Field>
+                        <Field>
                             <Label htmlFor="name-1">Latitude</Label>
                             <Input
                                 value={latitude} 
@@ -62,9 +77,9 @@ export function AddEventModal() {
                         <Field>
                             <Label htmlFor="username-1">Upload Image</Label>
                             <Input
-                                value={imageUrl} 
-                                onChange={(e) => setImageUrl(e.target.value)}
+                                onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
                                 type="file"
+                                id="image-upload"
                                 accept="image/*"
                             />
                         </Field>
@@ -82,7 +97,7 @@ export function AddEventModal() {
                         <DialogClose asChild>
                             <Button variant="outline">Cancel</Button>
                         </DialogClose>
-                        <Button onClick={() => uploadPost({title, longitude, latitude, imageUrl, description})}>Submit</Button>
+                        <Button onClick={() => uploadPost(title, longitude, latitude, imageFile, description)}>Submit</Button>
                     </DialogFooter>
                 </DialogContent>
             </form>

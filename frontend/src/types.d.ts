@@ -29,10 +29,10 @@ interface SignupForm extends LoginForm{
   last_name: string
 }
 
-interface EventForm { 
-  title: string, 
-  longitude: number, 
-  latitude: number, 
-  description: string, 
-  imageUrl: string
+interface EventFormResponse {
+  title: string;
+  longitude: number;
+  latitude: number;
+  description: string;
+  imageUrl: string;
 }
