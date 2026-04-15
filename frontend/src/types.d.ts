@@ -11,28 +11,35 @@ interface Post {
   _id: string;
   creatorId: string;
   description: string;
-  image: string;
+  imageUrl: string;
   latitude: number;
   longitude: number;
-  title: string
-  upvotes: number;
-  downvotes: number;
+  title: string;
+  upvote: number;
+  downvote: number;
+  userUpvoted: boolean;
+  userDownvoted: boolean;
+}
+
+interface User {
+  firstName: string;
+  lastName: string;
 }
 
 interface LoginForm {
-  email: string,
-  password: string
+  email: string;
+  password: string;
 }
 
-interface SignupForm extends LoginForm{
-  first_name: string,
-  last_name: string
+interface SignupForm extends LoginForm {
+  first_name: string;
+  last_name: string;
 }
 
-interface EventForm { 
-  title: string, 
-  longitude: number, 
-  latitude: number, 
-  description: string, 
-  imageUrl: string
+interface EventForm {
+  title: string;
+  longitude: number;
+  latitude: number;
+  description: string;
+  imageUrl: string;
 }

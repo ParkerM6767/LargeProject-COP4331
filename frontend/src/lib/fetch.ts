@@ -1,11 +1,14 @@
 export async function login(payload: LoginForm) {
   try {
-    const response = await fetch("http://localhost:8000/api/users/login", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    const response = await fetch(
+      import.meta.env.VITE_API_BASE + "/api/users/login",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+    );
     if (!response.ok) {
       throw new Error(`Error status: ${response.status}`);
     }
@@ -19,10 +22,13 @@ export async function login(payload: LoginForm) {
 
 export async function logout() {
   try {
-    const response = await fetch("http://localhost:8000/api/users/logout", {
-      method: "POST",
-      credentials: "include",
-    });
+    const response = await fetch(
+      import.meta.env.VITE_API_BASE + "/api/users/logout",
+      {
+        method: "POST",
+        credentials: "include",
+      },
+    );
     if (!response.ok) {
       throw new Error(`Error status: ${response.status}`);
     }
@@ -36,12 +42,15 @@ export async function logout() {
 
 export async function signup(payload: SignupForm) {
   try {
-    const response = await fetch("http://localhost:8000/api/users/createUser", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    const response = await fetch(
+      import.meta.env.VITE_API_BASE + "/api/users/createUser",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+    );
     if (!response.ok) {
       throw new Error(`Error status: ${response.status}`);
     }
@@ -55,7 +64,7 @@ export async function signup(payload: SignupForm) {
 
 export async function submitPost(payload: EventForm) {
   try {
-    const response = await fetch("http://localhost:8000/api/posts", {
+    const response = await fetch(import.meta.env.VITE_API_BASE + "/api/posts", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -78,7 +87,7 @@ export async function fetchPosts(
   limit: number = 0,
 ): Promise<{ posts: Post[]; totalPosts: number }> {
   try {
-    const url = new URL("http://localhost:8000/api/posts");
+    const url = new URL(import.meta.env.VITE_API_BASE + "/api/posts");
     url.searchParams.append("search", search);
     url.searchParams.append("page", page.toString());
     url.searchParams.append("limit", limit.toString());
@@ -95,6 +104,46 @@ export async function fetchPosts(
     return { posts: data.posts, totalPosts: data.count };
   } catch (error) {
     console.error("Fetch Posts failed:", error);
+    throw error;
+  }
+}
+
+export async function upvotePost(postId: string) {
+  try {
+    const response = await fetch(
+      import.meta.env.VITE_API_BASE + `/api/posts/${postId}/upvote`,
+      {
+        method: "PUT",
+        credentials: "include",
+      },
+    );
+    if (!response.ok) {
+      throw new Error(`Error status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Post upvote failed:", error);
+    throw error;
+  }
+}
+
+export async function downvotePost(postId: string) {
+  try {
+    const response = await fetch(
+      import.meta.env.VITE_API_BASE + `/api/posts/${postId}/downvote`,
+      {
+        method: "PUT",
+        credentials: "include",
+      },
+    );
+    if (!response.ok) {
+      throw new Error(`Error status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Post downvote failed:", error);
     throw error;
   }
 }

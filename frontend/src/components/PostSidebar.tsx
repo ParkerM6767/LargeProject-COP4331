@@ -19,13 +19,16 @@ import { Input } from "./ui/input";
 import { useGeolocation } from "../lib/hooks";
 import { PostContext } from "../lib/postContext";
 import { SidebarPagination } from "./SidebarPagination";
+import { type Map } from "leaflet";
 
 export function PostSidebar({
-  // posts,
   user,
+  map,
+  setActivePost,
 }: {
-  // posts: Post[];
   user: { firstName: string; lastName: string } | null;
+  map: Map | null;
+  setActivePost: (post: Post | null) => void;
 }) {
   const [showModal, setShowModal] = useState(false);
   const { posts, setSearch, setPage } = useContext(PostContext);
@@ -107,7 +110,7 @@ export function PostSidebar({
             </Dialog>
           )}
           <Suspense fallback={<PostGlimmers />}>
-            <ListPosts posts={posts} />
+            <ListPosts posts={posts} map={map} setActivePost={setActivePost} />
           </Suspense>
         </div>
       </SidebarContent>
@@ -125,15 +128,27 @@ export function PostSidebar({
 /**
  * Display all the posts loaded, optionally with a filter in the future
  */
-function ListPosts({ posts }: { posts: Post[] }) {
+function ListPosts({
+  posts,
+  map,
+  setActivePost,
+}: {
+  posts: Post[];
+  map: Map | null;
+  setActivePost: (post: Post | null) => void;
+}) {
   return (
     <>
       {posts.map((post) => (
         <div
           key={post._id}
           className="p-4 mx-4 mt-4 border border-muted-foreground rounded-md"
+          onClick={() => {
+            setActivePost(post);
+            map?.panTo([post.latitude, post.longitude]);
+          }}
         >
-          <img src={post.image} />
+          {post.imageUrl && <img src={post.imageUrl} />}
           <div>
             <p>{post.title}</p>
             <p>{post.description}</p>
