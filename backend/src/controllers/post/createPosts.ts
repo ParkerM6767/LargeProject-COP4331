@@ -1,16 +1,16 @@
 import { Request, Response } from 'express'
 import { Post } from '../../models/post.model'
-import fs from 'fs';
-import path from 'path';
-import mongoose from 'mongoose';
-const staticImagePath = (import.meta.dirname) + '/../../../public/images/posts/';
+import fs from 'fs'
+import path from 'path'
+import mongoose from 'mongoose'
+const staticImagePath = path.join(process.cwd(), 'public/images/posts/')
 
 // POST /
 export async function createPost (req: Request, res: Response) {
   try {
-    let { title, longitude, latitude, description } = req.body;
-    longitude = Number(longitude);
-    latitude = Number(latitude);
+    let { title, longitude, latitude, description } = req.body
+    longitude = Number(longitude)
+    latitude = Number(latitude)
     const userId = req.user
 
     if (!title || title.trim().length === 0) {
@@ -21,13 +21,13 @@ export async function createPost (req: Request, res: Response) {
       return res.status(400).json({ message: 'Description is required' })
     }
 
-    if (latitude === undefined || longitude === undefined) {
+    if (req.body.latitude === undefined || req.body.longitude === undefined) {
       return res
         .status(400)
         .json({ message: 'Latitude and longitude are required' })
     }
 
-    if (typeof longitude !== 'number' || typeof latitude !== 'number') {
+    if (isNaN(longitude) || isNaN(latitude)) {
       return res
         .status(400)
         .json({ message: 'Longitude and latitude must be numbers' })
@@ -49,21 +49,24 @@ export async function createPost (req: Request, res: Response) {
     const [minLat, maxLng] = bottomRight.map(Number)
 
     if (
-      longitude < maxLng ||
-      longitude > minLng ||
       latitude < minLat ||
-      latitude > maxLat
+      latitude > maxLat ||
+      longitude < maxLng ||
+      longitude > minLng
     ) {
       return res.status(400).json({ message: 'Coordinates are out of bounds' })
     }
-    const objectId = new mongoose.Types.ObjectId();
-    let newFileName = "";
-    if(req.file){
-      const oldFileName = staticImagePath + req.file?.filename;
-      newFileName = staticImagePath + objectId.toString() + path.extname(req.file.originalname);
-      fs.rename(oldFileName, newFileName, (err) => {
-        console.log(err);
-      });
+    const objectId = new mongoose.Types.ObjectId()
+    let newFileName = ''
+    if (req.file) {
+      const oldFileName = staticImagePath + req.file?.filename
+      newFileName =
+        staticImagePath +
+        objectId.toString() +
+        path.extname(req.file.originalname)
+      fs.rename(oldFileName, newFileName, err => {
+        console.log(err)
+      })
     }
     const post = await Post.create({
       _id: objectId,

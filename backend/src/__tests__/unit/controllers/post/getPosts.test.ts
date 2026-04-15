@@ -10,7 +10,8 @@ import { Post } from '../../../../models/post.model'
 jest.mock('../../../../models/post.model', () => ({
   Post: {
     find: jest.fn(),
-    findById: jest.fn()
+    findById: jest.fn(),
+    countDocuments: jest.fn()
   }
 }))
 
@@ -39,7 +40,7 @@ const mockPosts = [
     latitude: 20,
     upvote: 5,
     downvote: 2,
-    createdAt: '2023-01-01T00:00:00.000Z',
+    createdAt: '2023-01-01T00:00:00.000Z'
   },
   {
     _id: '2',
@@ -57,10 +58,14 @@ const mockPosts = [
 // -------- Tests --------------------------------------------------------
 
 describe('GET /getPosts', () => {
-  let chain: any
+  let chain: {
+    sort: jest.Mock
+    skip: jest.Mock
+    limit: jest.Mock
+    select: jest.Mock
+  }
 
   beforeEach(() => {
-    // Recreate fresh chain before every test so call counts don't bleed
     chain = {
       sort: jest.fn().mockReturnThis(),
       skip: jest.fn().mockReturnThis(),
@@ -68,10 +73,13 @@ describe('GET /getPosts', () => {
       select: jest.fn().mockResolvedValue(mockPosts)
     }
     ;(Post.find as jest.Mock).mockReturnValue(chain)
+    ;(Post.countDocuments as jest.Mock).mockResolvedValue(mockPosts.length)
   })
 
   it('should return a list of posts with default pagination', async () => {
     const response = await request(app).get('/getPosts')
+
+    console.log(response.body)
 
     expect(response.status).toBe(200)
     expect(response.body.message).toBe('Posts retrieved successfully')
@@ -85,6 +93,8 @@ describe('GET /getPosts', () => {
   it('should return a list of posts with search query', async () => {
     const response = await request(app).get('/getPosts?search=Test')
 
+    console.log(response.body)
+
     expect(response.status).toBe(200)
     expect(response.body.message).toBe('Posts retrieved successfully')
     expect(Post.find).toHaveBeenCalledWith({
@@ -94,6 +104,9 @@ describe('GET /getPosts', () => {
 
   it('should apply correct skip and limit for page 2 with limit 10', async () => {
     const response = await request(app).get('/getPosts?page=2&limit=10')
+
+    console.log(response.body)
+
     expect(response.status).toBe(200)
     expect(chain.skip).toHaveBeenCalledWith(10)
     expect(chain.limit).toHaveBeenCalledWith(10)

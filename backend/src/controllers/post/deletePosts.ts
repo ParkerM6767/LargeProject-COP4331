@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { Post } from '../../models/post.model'
 import fs from 'fs';
 import path from 'path';
-const staticImagePath = (import.meta.dirname) + '/../../../public/images/posts/';
+const staticImagePath = path.join(process.cwd(), 'public/images/posts/')
 
 // DELETE /:id
 export async function deletePost (req: Request, res: Response) {
