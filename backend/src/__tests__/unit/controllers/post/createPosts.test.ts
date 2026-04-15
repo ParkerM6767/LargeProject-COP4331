@@ -41,8 +41,6 @@ describe('POST /createPost', () => {
 
     const response = await request(app).post('/createPost').send(newPost)
 
-    console.log(response.body)
-
     expect(response.status).toBe(201)
     expect(response.body).toEqual({
       message: 'Post created successfully',

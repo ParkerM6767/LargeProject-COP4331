@@ -79,8 +79,6 @@ describe('GET /getPosts', () => {
   it('should return a list of posts with default pagination', async () => {
     const response = await request(app).get('/getPosts')
 
-    console.log(response.body)
-
     expect(response.status).toBe(200)
     expect(response.body.message).toBe('Posts retrieved successfully')
     expect(response.body.posts).toEqual(mockPosts)
@@ -93,8 +91,6 @@ describe('GET /getPosts', () => {
   it('should return a list of posts with search query', async () => {
     const response = await request(app).get('/getPosts?search=Test')
 
-    console.log(response.body)
-
     expect(response.status).toBe(200)
     expect(response.body.message).toBe('Posts retrieved successfully')
     expect(Post.find).toHaveBeenCalledWith({
@@ -104,8 +100,6 @@ describe('GET /getPosts', () => {
 
   it('should apply correct skip and limit for page 2 with limit 10', async () => {
     const response = await request(app).get('/getPosts?page=2&limit=10')
-
-    console.log(response.body)
 
     expect(response.status).toBe(200)
     expect(chain.skip).toHaveBeenCalledWith(10)
