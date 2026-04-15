@@ -19,7 +19,18 @@ export async function getPosts (req: Request, res: Response) {
       );
     const count = await Post.find(filter).countDocuments();
 
-    res.status(200).json({ message: 'Posts retrieved successfully', posts, count })
+    res
+      .status(200)
+      .json({ message: 'Posts retrieved successfully', 
+        posts, 
+        count,
+        userUpvoted: posts.map(post => post.upvotedBy.some(
+          id => id.toString() === req.user
+        )),
+        userDownvoted: posts.map(post => post.downvotedBy.some(
+          id => id.toString() === req.user
+        )) 
+      })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Failed to get posts' })
@@ -38,7 +49,16 @@ export async function getPostById (req: Request, res: Response) {
       return res.status(404).json({ message: 'Post not found' })
     }
 
-    res.status(200).json({ message: 'Post retrieved successfully', post })
+    res.status(200).json({ 
+      message: 'Post retrieved successfully', 
+      post,
+      userUpvoted: post.upvotedBy.some(
+        id => id.toString() === req.user
+      ),
+      userDownvoted: post.downvotedBy.some(
+        id => id.toString() === req.user
+      ) 
+    })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Failed to get post' })
@@ -60,7 +80,16 @@ export async function getPostsByUserId (req: Request, res: Response) {
       return res.status(404).json({ message: 'No posts found for this user' })
     }
 
-    res.status(200).json({ message: 'Posts retrieved successfully', posts })
+    res.status(200).json({ 
+      message: 'Post retrieved successfully', 
+      posts,
+      userUpvoted: posts.map(post => post.upvotedBy.some(
+        id => id.toString() === req.user
+      )),
+      userDownvoted: posts.map(post => post.downvotedBy.some(
+        id => id.toString() === req.user
+      ))
+    })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Failed to get posts' })
