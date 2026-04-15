@@ -11,7 +11,7 @@ interface Post {
   _id: string;
   creatorId: string;
   description: string;
-  image: string;
+  imageUrl: string;
   latitude: number;
   longitude: number;
   title: string

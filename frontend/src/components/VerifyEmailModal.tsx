@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DialogContent,
   DialogDescription,
@@ -14,19 +14,27 @@ import { Label } from "./ui/label";
 
 interface EmailModalProps {
   setOpen: (open: boolean) => void;
+  passedEmail: string;
 }
 
-export function VerifyEmailModal({setOpen} : EmailModalProps) {
+export function VerifyEmailModal({setOpen, passedEmail} : EmailModalProps) {
   const [verificationCode, setVerificationCode] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
+  const [email, setEmail] = useState<string>(passedEmail);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  function verifyEmail() {
+  useEffect(() => {
+    setEmail(passedEmail);
+  }, [passedEmail]);
+
+  async function verifyEmail() {
     try {
-        verify(email, verificationCode)
-    }   catch (error) {
+        await verify(email, verificationCode);
+        setOpen(false);
+    }   catch (error: any) {
+        console.log(error.message)
+        setErrorMessage(error.message);
         console.error("Error:", error);
     }
-    setOpen(false);
   }
 
   return (
@@ -34,19 +42,15 @@ export function VerifyEmailModal({setOpen} : EmailModalProps) {
       <DialogContent className="z-1060 grid gap-8">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
-            Email Verification
+            Check inbox for code
           </DialogTitle>
           <DialogDescription className="hidden"/>
         </DialogHeader>
-        <Field>
-            <Label>Email</Label>
-            <Input
-                className="border rounded p-2"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                type="text"
-            />
-        </Field>
+        {errorMessage && (
+          <Field className="flex text-center text-red-500">
+            <p>{errorMessage}</p>
+          </Field>
+        )}
         <Field>
             <Label>Verification Code</Label>
             <Input

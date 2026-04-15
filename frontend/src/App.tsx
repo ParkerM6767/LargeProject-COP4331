@@ -18,13 +18,16 @@ import { ForgotPasswordModal } from "./components/ForgotPasswordModal";
 
 function App() {
   const [user, setUser] = useState<{ firstName: string, lastName: string, email: string} | null>(null);
+  const [email, setEmail] = useState<string>('');
   const [fetchedPosts, setFetchedPosts] = useState<Post[]>([]);
   const [open, setOpen] = useState<boolean>(false);
   const [loginOpen, setLoginOpen] = useState<boolean>(false);
   const [resetOpen, setResetOpen] = useState<boolean>(false);
+  const [hasClickedLogin, setHasClickedLogin] = useState(false);
 
   useEffect(() => {
     fetchPosts().then(setFetchedPosts);
+    console.log(user)
   }, []);
 
   return (
@@ -43,7 +46,11 @@ function App() {
 
           {user ? (
             <Button
-              onClick={() => { logout(); setUser(null); }}
+              onClick={() => {
+                logout(); 
+                setUser(null); 
+                setHasClickedLogin(false);
+              }}
               size="lg"
               className="absolute top-6 right-10 p-4 w-[8rem] h-[3rem] text-2xl inset-shadow-[0_2px_8px_rgba(0,0,0,0.2)] shadow-[0_0_10px_rgba(0,0,0,.5)]  shadow-white"
             >
@@ -52,14 +59,18 @@ function App() {
           ) : (
             <>
               <Button
-                onClick={() => setLoginOpen(true)}
+                onClick={() => {
+                  setHasClickedLogin(true);
+                  setLoginOpen(true);
+                }}
                 className="absolute top-6 right-10 p-4 w-[8rem] h-[3rem] text-2xl inset-shadow-[0_2px_8px_rgba(0,0,0,0.2)] shadow-[0_0_10px_rgba(0,0,0,.5)]  shadow-white"
               >
                 Login
               </Button>
-              <Dialog open={loginOpen} onOpenChange={setLoginOpen}>
+              <Dialog open={loginOpen && hasClickedLogin} onOpenChange={setLoginOpen}>
                 <LoginModal 
                   onLoginSuccess={(userData) => setUser(userData)} 
+                  onLoginFailure={(email) => setEmail(email)}
                   setVerifyOpen={setOpen} 
                   setLoginOpen={setLoginOpen} 
                   setResetOpen={setResetOpen}
@@ -68,10 +79,10 @@ function App() {
             </>
           )}
           <Dialog open={open} onOpenChange={setOpen}>
-            <VerifyEmailModal setOpen={setOpen}/>
+            <VerifyEmailModal setOpen={setOpen} passedEmail={email}/>
           </Dialog>
           <Dialog open={resetOpen} onOpenChange={setResetOpen}>
-            <ForgotPasswordModal setResetOpen={setResetOpen}/>
+            <ForgotPasswordModal setResetOpen={setResetOpen} passedEmail={email}/>
           </Dialog>
         </Map>
       </SidebarInset>

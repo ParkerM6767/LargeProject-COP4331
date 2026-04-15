@@ -68,11 +68,16 @@ export async function submitPost(payload: FormData): Promise<EventFormResponse> 
             credentials: "include",
             body: payload
         });
+
+        const data = await response.json();
+
         if (!response.ok) {
-            throw new Error(`Error status: ${response.status}`);
+            const err = new Error(data.message || `Error status: ${response.status}`);
+            (err as any).status = response.status;
+            throw err;
         }
 
-        return await response.json() as Promise<EventFormResponse>;
+        return data as EventFormResponse;
 
     } catch(error) {
         console.error("Post submission failed:", error);
@@ -109,10 +114,16 @@ export async function verify( email: string | null, code: string | null) {
                 code: code
             })
         });
+        
+        const data = await response.json();
+
         if (!response.ok) {
-            throw new Error(`Error status: ${response.status}`);
+            const err = new Error(data.message || `Error status: ${response.status}`);
+            (err as any).status = response.status;
+            throw err;
         }
-        return await response.json();
+
+        return data
 
     } catch(error) {
         console.error("Verification failed:", error);
@@ -122,7 +133,7 @@ export async function verify( email: string | null, code: string | null) {
 
 export async function forgotPassword( email: string | null) {
     try {
-        const response = await fetch("http://localhost:8000/api/users/verify-email", {
+        const response = await fetch("http://localhost:8000/api/users/forgot-password", {
             method: "POST",
             credentials: "include",
             headers: {"Content-Type": "application/json"},

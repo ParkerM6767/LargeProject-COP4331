@@ -10,14 +10,14 @@ import { Button } from "./ui/button";
 
 interface ModalProps {
   onLoginSuccess: (user: { firstName: string; lastName: string, email: string }) => void;
+  onLoginFailure: (email: string) => void;
   setVerifyOpen: (open: boolean) => void;
   setLoginOpen: (open: boolean) => void;
   setResetOpen: (open: boolean) => void;
 }
 
-export function LoginModal({ onLoginSuccess, setVerifyOpen, setLoginOpen, setResetOpen }: ModalProps) {
+export function LoginModal({ onLoginSuccess, onLoginFailure, setVerifyOpen, setLoginOpen, setResetOpen }: ModalProps) {
   const [loggingIn, setLoggingIn] = useState<boolean>(true);
-
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -35,11 +35,6 @@ export function LoginModal({ onLoginSuccess, setVerifyOpen, setLoginOpen, setRes
 
   function signupPayload(firstName: string, lastName: string, email: string, password: string): SignupForm {
     // Confirm that email string has an @ucf.edu
-    if (!email.endsWith("@ucf.edu")) {
-      // Remove this alert later; only for testing atm
-      alert("You need a valid ucf.edu email in order to sign up.");
-      throw new Error("Invalid email. Please use your UCF email.");
-    }
 
     const payload = {
       first_name: firstName,
@@ -60,10 +55,13 @@ export function LoginModal({ onLoginSuccess, setVerifyOpen, setLoginOpen, setRes
       }
       onLoginSuccess({ firstName: data.firstName, lastName: data.lastName, email: data.email });
     } catch (error: any) {
+      onLoginFailure(email);
       if (error.status === 403 || error.response?.status === 403) {
         setLoginOpen(false);
         setVerifyOpen(true);
-      } else if (error.message === "invalid password") {
+      } else if (!email.endsWith("@ucf.edu")) {
+        setErrorMessage("Invalid email. Please use your UCF email.");
+      } else if (error.message === "invalid password" || "invalid credentials") {
         setErrorMessage(error.message)
       }
       console.error("Error:", error.message);
@@ -83,7 +81,11 @@ export function LoginModal({ onLoginSuccess, setVerifyOpen, setLoginOpen, setRes
             {loggingIn === true ? "Login" : "Sign Up"}
           </DialogTitle>
         </DialogHeader>
-
+        {errorMessage && (
+          <div className="flex justify-center text-red-500">
+            <p>{errorMessage}</p>
+          </div>
+        )}
         {loggingIn === false && (
           <>
             <input
@@ -102,9 +104,6 @@ export function LoginModal({ onLoginSuccess, setVerifyOpen, setLoginOpen, setRes
             />
           </>
         )}
-        <div className="flex justify-center text-red-500">
-          <p>{errorMessage}</p>
-        </div>
         <input
           className="border rounded p-2"
           value={email}
@@ -140,7 +139,6 @@ export function LoginModal({ onLoginSuccess, setVerifyOpen, setLoginOpen, setRes
             {password !== confirmPassword && <div>Passwords Don't match</div>}
           </>
         )}
-
         <DialogFooter className="flex flex-row sm:justify-between">
           <p
             className="content-center underline text-blue-500 select-none"

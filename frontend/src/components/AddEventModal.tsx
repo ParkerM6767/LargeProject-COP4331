@@ -13,33 +13,37 @@ import { Label } from "./ui/label"
 import { Textarea } from "./ui/textarea";
 import { submitPost } from "../lib/fetch";
 
-function uploadPost(
-    title: string,
-    longitude: number,
-    latitude: number,
-    imageFile: File | null,
-    description: string
-) {
+interface AddEventModalProps {
+  setPostingOpen: (open: boolean) => void;
+  geoLocation: {
+    coords: { lat: number; lng: number } | null
+  }
+}
+
+export function AddEventModal({setPostingOpen, geoLocation: {coords}} :AddEventModalProps) {
+    const [title, setTitle] = useState<string>('');
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [description, setDescription] = useState<string>('');
+    const [errorMessage, setErrorMessage] = useState<string>('');
+
+async function uploadPost(title: string, imageFile: File | null, description: string) {
     try {
+        setErrorMessage('');
         const formData = new FormData();
         formData.append("title", title);
-        formData.append("longitude", String(longitude));
-        formData.append("latitude", String(latitude));
+        formData.append("longitude", String(coords?.lng));
+        formData.append("latitude", String(coords?.lat));
         formData.append("description", description);
         if (imageFile) {
             formData.append("image", imageFile);
         }
-        submitPost(formData);
-    } catch (error) {
+        await submitPost(formData);
+        setPostingOpen(false);
+    } catch (error: any) {
         console.error("Upload Failed:", error);
+        setErrorMessage(error?.message || "Failed to create post");
     }
 }
-export function AddEventModal() {
-    const [title, setTitle] = useState<string>('');
-    const [longitude, setLongitude] = useState<number>(0);
-    const [latitude, setLatitude] = useState<number>(0);
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [description, setDescription] = useState<string>('');
 
     return(
         <>
@@ -56,22 +60,6 @@ export function AddEventModal() {
                                 onChange={(e) => setTitle(e.target.value)}
                                 type="text"
                                 id="post-title"
-                            />
-                        </Field>
-                        <Field>
-                            <Label htmlFor="name-1">Longitude</Label>
-                            <Input
-                                value={longitude} 
-                                onChange={(e) => setLongitude(parseFloat(e.target.value))}
-                                type="number"
-                            />
-                        </Field>
-                        <Field>
-                            <Label htmlFor="name-1">Latitude</Label>
-                            <Input
-                                value={latitude} 
-                                onChange={(e) => setLatitude(parseFloat(e.target.value))}
-                                type="number"
                             />
                         </Field>
                         <Field>
@@ -93,11 +81,16 @@ export function AddEventModal() {
                             />
                         </Field>
                     </FieldGroup>
+                    {errorMessage && (
+                        <div className="flex justify-center text-red-500">
+                            <p>{errorMessage}</p>
+                        </div>
+                    )}
                     <DialogFooter>
                         <DialogClose asChild>
                             <Button variant="outline">Cancel</Button>
                         </DialogClose>
-                        <Button onClick={() => uploadPost(title, longitude, latitude, imageFile, description)}>Submit</Button>
+                        <Button onClick={() => uploadPost(title, imageFile, description)}>Submit</Button>
                     </DialogFooter>
                 </DialogContent>
             </form>

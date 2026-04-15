@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DialogContent,
   DialogDescription,
@@ -14,10 +14,15 @@ import { Label } from "./ui/label";
 
 interface PasswordModalProps {
   setResetOpen: (open: boolean) => void;
+  passedEmail: string;
 }
 
-export function ForgotPasswordModal({setResetOpen} : PasswordModalProps) {
-  const [email, setEmail] = useState<string>("");
+export function ForgotPasswordModal({setResetOpen, passedEmail} : PasswordModalProps) {
+  const [email, setEmail] = useState<string>(passedEmail);
+
+  useEffect(() => {
+    setEmail(passedEmail);
+  }, [passedEmail]);
 
   function resetPassword() {
     try {
