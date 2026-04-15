@@ -21,7 +21,6 @@ import plus from "../assets/plus.svg"
 
 import { Input } from "./ui/input";
 import { LocationAlert } from "./LocationAlert";
-// import { LocationAlert } from "./LocationAlert";
 
 function useGeolocation() {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
