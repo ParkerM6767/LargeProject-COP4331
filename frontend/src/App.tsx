@@ -20,7 +20,7 @@ import { Toaster } from "./components/ui/sonner"
 // const UCFLat = -81.2002;
 
 function App() {
-  const [user, setUser] = useState<{ firstName: string, lastName: string, email: string} | null>(null);
+  const [user, setUser] = useState<{ firstName: string, lastName: string, email: string } | null>(null);
   const [email, setEmail] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
   const [loginOpen, setLoginOpen] = useState<boolean>(false);
@@ -52,9 +52,53 @@ function App() {
     }
   }, []);
 
+  let inBrowser = true;
+
+  // Detect user agent for mobile app and hide react components if on mobile
+  if (navigator.userAgent.includes("soracl")) {
+    inBrowser = false;
+  }
+
+  function LoginButton() {
+    return (user ? (
+      <Button
+        onClick={() => {
+          logout();
+          setUser(null);
+          setHasClickedLogin(false);
+        }}
+        size="lg"
+        className="absolute top-6 right-10 p-4 w-[8rem] h-[3rem] text-2xl inset-shadow-[0_2px_8px_rgba(0,0,0,0.2)] shadow-[0_0_10px_rgba(0,0,0,.5)]  shadow-white"
+      >
+        Logout
+      </Button>
+    ) : (
+      <>
+        <Button
+          onClick={() => {
+            setHasClickedLogin(true);
+            setLoginOpen(true);
+          }}
+          className="absolute top-6 right-10 p-4 w-[8rem] h-[3rem] text-2xl inset-shadow-[0_2px_8px_rgba(0,0,0,0.2)] shadow-[0_0_10px_rgba(0,0,0,.5)]  shadow-white"
+        >
+          Login
+        </Button>
+        <Dialog open={loginOpen && hasClickedLogin} onOpenChange={setLoginOpen}>
+          <LoginModal
+            onLoginSuccess={(userData) => setUser(userData)}
+            onLoginFailure={(email) => setEmail(email)}
+            setVerifyOpen={setOpen}
+            setLoginOpen={setLoginOpen}
+            setResetOpen={setResetOpen}
+          />
+        </Dialog>
+      </>
+    ))
+  }
+
   return (
     <SidebarProvider className="w-screen h-screen absolute top-0 left-0">
-      <PostSidebar user={user} map={map} setActivePost={setActivePost} />
+      {inBrowser ? <PostSidebar user={user} map={map} setActivePost={setActivePost} /> : null}
 
       <SidebarInset>
         {/* Everything that gets moved by the sidebar goes below */}
@@ -65,53 +109,20 @@ function App() {
           setActivePost={setActivePost}
           ref={setMap}
         >
-          <Toaster/>
+          <Toaster />
           <div className="flex gap-2">
-            <SideBarToggle />
+            {inBrowser ? <SideBarToggle /> : null}
             <MapZoom />
             <ModeToggle />
           </div>
 
-          {user ? (
-            <Button
-              onClick={() => {
-                logout(); 
-                setUser(null); 
-                setHasClickedLogin(false);
-              }}
-              size="lg"
-              className="absolute top-6 right-10 p-4 w-[8rem] h-[3rem] text-2xl inset-shadow-[0_2px_8px_rgba(0,0,0,0.2)] shadow-[0_0_10px_rgba(0,0,0,.5)]  shadow-white"
-            >
-              Logout
-            </Button>
-          ) : (
-            <>
-              <Button
-                onClick={() => {
-                  setHasClickedLogin(true);
-                  setLoginOpen(true);
-                }}
-                className="absolute top-6 right-10 p-4 w-[8rem] h-[3rem] text-2xl inset-shadow-[0_2px_8px_rgba(0,0,0,0.2)] shadow-[0_0_10px_rgba(0,0,0,.5)]  shadow-white"
-              >
-                Login
-              </Button>
-              <Dialog open={loginOpen && hasClickedLogin} onOpenChange={setLoginOpen}>
-                <LoginModal 
-                  onLoginSuccess={(userData) => setUser(userData)} 
-                  onLoginFailure={(email) => setEmail(email)}
-                  setVerifyOpen={setOpen} 
-                  setLoginOpen={setLoginOpen} 
-                  setResetOpen={setResetOpen}
-                />
-              </Dialog>
-            </>
-          )}
+          {inBrowser ? <LoginButton /> : null}
           <Dialog open={open} onOpenChange={setOpen}>
-            <VerifyEmailModal setOpen={setOpen} passedEmail={email}/>
+            <VerifyEmailModal setOpen={setOpen} passedEmail={email} />
           </Dialog>
           <Dialog open={resetOpen} onOpenChange={setResetOpen}>
-            <ForgotPasswordModal 
-              setResetOpen={setResetOpen} 
+            <ForgotPasswordModal
+              setResetOpen={setResetOpen}
               resetToken={resetToken}
             />
           </Dialog>
