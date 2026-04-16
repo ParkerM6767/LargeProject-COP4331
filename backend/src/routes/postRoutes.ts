@@ -18,9 +18,9 @@ import { storeImage } from '../controllers/post/imageManagement'
 const postrouter = Router()
 
 postrouter.post('/', authMiddleware, storeImage, createPost)
-postrouter.get('/', getPosts)
+postrouter.get('/', authMiddleware, getPosts)
 postrouter.get('/my-posts', authMiddleware, getPostsByUserId)
-postrouter.get('/:id', getPostById)
+postrouter.get('/:id', authMiddleware, getPostById)
 postrouter.put('/:id', authMiddleware, updatePost) 
 postrouter.put('/:id/upvote', authMiddleware, upvotePost) 
 postrouter.put('/:id/downvote', authMiddleware, downvotePost)

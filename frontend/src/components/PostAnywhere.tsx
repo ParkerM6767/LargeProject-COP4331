@@ -54,10 +54,10 @@ export function PostAnywhere({
           style={{ left: menuCoords.left, top: menuCoords.top + 8 }}
         >
           <Button
+            key={menuCoords.left + 1000 * menuCoords.top}
             variant="outline"
             className="disabled:opacity-100"
             onClick={(event) => {
-              console.log("clicked");
               event.stopPropagation();
               setShowModal(true);
             }}
@@ -81,13 +81,15 @@ export function PostAnywhere({
         }}
       >
         <AddEventModal
-          longitude={postCoords?.lng || null}
-          latitude={postCoords?.lat || null}
-          closeModal={() => {
-            setShowModal(false);
-            setPostCoords(null);
-            setMenuCoords(null);
-          }}
+          key={(menuCoords?.left || 0) + 1000 * (menuCoords?.top || 0)}
+          geoLocation={{coords: postCoords}}
+          setPostingOpen={(open) => {
+            if (!open) {
+              setShowModal(false);
+              setPostCoords(null);
+              setMenuCoords(null);
+            }}
+          }
         />
       </Dialog>
     </>
