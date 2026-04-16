@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { login, signup } from "../lib/fetch";
+import { forgotPassword, login, signup } from "../lib/fetch";
 import {
   DialogContent,
   DialogFooter,
@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
+import { toast } from "sonner"
 
 interface ModalProps {
   onLoginSuccess: (user: { firstName: string; lastName: string, email: string }) => void;
@@ -16,7 +17,7 @@ interface ModalProps {
   setResetOpen: (open: boolean) => void;
 }
 
-export function LoginModal({ onLoginSuccess, onLoginFailure, setVerifyOpen, setLoginOpen, setResetOpen }: ModalProps) {
+export function LoginModal({ onLoginSuccess, onLoginFailure, setVerifyOpen, setLoginOpen}: ModalProps) {
   const [loggingIn, setLoggingIn] = useState<boolean>(true);
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
@@ -34,8 +35,6 @@ export function LoginModal({ onLoginSuccess, onLoginFailure, setVerifyOpen, setL
   }
 
   function signupPayload(firstName: string, lastName: string, email: string, password: string): SignupForm {
-    // Confirm that email string has an @ucf.edu
-
     const payload = {
       first_name: firstName,
       last_name: lastName,
@@ -68,9 +67,10 @@ export function LoginModal({ onLoginSuccess, onLoginFailure, setVerifyOpen, setL
     }
   }
 
-  function openResetModal() {
+  function sendResetLink() {
     setLoginOpen(false)
-    setResetOpen(true)
+    forgotPassword(email);
+    toast.success("Reset link has been sent to email if it exists", { position: "top-center" })
   }
 
   return (
@@ -122,7 +122,7 @@ export function LoginModal({ onLoginSuccess, onLoginFailure, setVerifyOpen, setL
           <a 
             className="underline text-blue-500 select-none" 
             href="#"
-            onClick={openResetModal}
+            onClick={sendResetLink}
           >
             Forgot password?
           </a>

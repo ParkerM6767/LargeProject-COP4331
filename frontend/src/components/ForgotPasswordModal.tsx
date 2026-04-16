@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   DialogContent,
   DialogDescription,
@@ -8,26 +8,22 @@ import {
 } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input"
-import { forgotPassword } from "../lib/fetch";
 import { Field } from "./ui/field";
 import { Label } from "./ui/label";
+import { updatePassword } from "../lib/fetch";
 
 interface PasswordModalProps {
-  setResetOpen: (open: boolean) => void;
-  passedEmail: string;
+  setResetOpen: (open: boolean) => void,
+  resetToken: string | null
 }
 
-export function ForgotPasswordModal({setResetOpen, passedEmail} : PasswordModalProps) {
-  const [email, setEmail] = useState<string>(passedEmail);
-
-  useEffect(() => {
-    setEmail(passedEmail);
-  }, [passedEmail]);
+export function ForgotPasswordModal({setResetOpen, resetToken} : PasswordModalProps) {
+  const [password, setPassword] = useState<string>('');
 
   function resetPassword() {
     try {
-        forgotPassword(email)
-    }   catch (error) {
+        updatePassword(resetToken, password);
+    }   catch (error: any) {
         console.error("Error:", error);
     }
     setResetOpen(false);
@@ -43,11 +39,11 @@ export function ForgotPasswordModal({setResetOpen, passedEmail} : PasswordModalP
           <DialogDescription className="hidden"/>
         </DialogHeader>
         <Field>
-            <Label>Please enter email to reset password</Label>
+            <Label>Please enter new password</Label>
             <Input
                 className="border rounded p-2"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 type="text"
             />
         </Field>
@@ -57,7 +53,7 @@ export function ForgotPasswordModal({setResetOpen, passedEmail} : PasswordModalP
             onClick={resetPassword}
             type="submit"
           >
-            Send reset link
+            Reset
           </Button>
         </DialogFooter>
       </DialogContent>

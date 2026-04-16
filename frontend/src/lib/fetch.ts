@@ -50,11 +50,15 @@ export async function signup(payload: SignupForm) {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(payload),
         });
+        const data = await response.json();
+
         if (!response.ok) {
-            throw new Error(`Error status: ${response.status}`);
+            const err = new Error(data.message || `Error status: ${response.status}`);
+            (err as any).status = response.status;
+            throw err;
         }
 
-        return await response.json();
+        return data
     } catch(error) {
         console.error("Signup Failed:", error);
         throw error;
@@ -141,13 +145,46 @@ export async function forgotPassword( email: string | null) {
                 email: email
             })
         });
+        const data = await response.json();
+
         if (!response.ok) {
-            throw new Error(`Error status: ${response.status}`);
+            const err = new Error(data.message || `Error status: ${response.status}`);
+            (err as any).status = response.status;
+            throw err;
         }
-        return await response.json();
+
+        return data
 
     } catch(error) {
         console.error("Reset failed:", error);
+        throw error;
+    }
+}
+
+export async function updatePassword( token: string | null, password: string | null) {
+    try {
+        const response = await fetch("http://localhost:8000/api/users/reset-password", {
+            method: "PUT",
+            credentials: "include",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                token: token,
+                newPassword: password
+            })
+        });
+        
+        const data = await response.json();
+
+        if (!response.ok) {
+            const err = new Error(data.message || `Error status: ${response.status}`);
+            (err as any).status = response.status;
+            throw err;
+        }
+
+        return data
+
+    } catch(error) {
+        console.error("Update Password failed:", error);
         throw error;
     }
 }

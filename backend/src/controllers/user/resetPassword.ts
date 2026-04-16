@@ -28,7 +28,7 @@ export async function forgotPassword (req: Request, res: Response) {
 
     await user.save()
 
-    await forgotPasswordEmail(email, token, `${req.protocol}://${req.get('host')}`)
+    await forgotPasswordEmail(email, token, `http://localhost:5173`)
 
     res
       .status(200)

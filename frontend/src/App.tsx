@@ -12,6 +12,7 @@ import { ModeToggle } from "./components/ui/themes";
 import { fetchPosts, logout } from "./lib/fetch";
 import { VerifyEmailModal } from "./components/VerifyEmailModal";
 import { ForgotPasswordModal } from "./components/ForgotPasswordModal";
+import { Toaster } from "./components/ui/sonner"
 
 // const UCFLong = 28.60235;
 // const UCFLat = -81.2002;
@@ -24,10 +25,17 @@ function App() {
   const [loginOpen, setLoginOpen] = useState<boolean>(false);
   const [resetOpen, setResetOpen] = useState<boolean>(false);
   const [hasClickedLogin, setHasClickedLogin] = useState(false);
+  const [resetToken, setResetToken] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPosts().then(setFetchedPosts);
-    console.log(user)
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    if (token) {
+      setResetToken(token);
+      setResetOpen(true);
+      window.history.replaceState({}, '', '/');
+    }
   }, []);
 
   return (
@@ -38,6 +46,7 @@ function App() {
         {/* Everything that gets moved by the sidebar goes below */}
 
         <Map posts={fetchedPosts}>
+          <Toaster/>
           <div className="flex gap-2">
             <SideBarToggle />
             <MapZoom />
@@ -82,7 +91,10 @@ function App() {
             <VerifyEmailModal setOpen={setOpen} passedEmail={email}/>
           </Dialog>
           <Dialog open={resetOpen} onOpenChange={setResetOpen}>
-            <ForgotPasswordModal setResetOpen={setResetOpen} passedEmail={email}/>
+            <ForgotPasswordModal 
+              setResetOpen={setResetOpen} 
+              resetToken={resetToken}
+            />
           </Dialog>
         </Map>
       </SidebarInset>
