@@ -22,7 +22,7 @@ function App() {
 
   let inBrowser = true;
 
-  // Detect user agent for mobile app and hide react buttons if on mobile
+  // Detect user agent for mobile app and hide react components if on mobile
   if (navigator.userAgent.includes("soracl")) {
     inBrowser = false;
   }
@@ -53,14 +53,14 @@ function App() {
 
   return (
     <SidebarProvider className="w-screen h-screen absolute top-0 left-0">
-      <PostSidebar user={user} />
+      {inBrowser ? <PostSidebar user={user} /> : null}
 
       <SidebarInset>
         {/* Everything that gets moved by the sidebar goes below */}
 
         <Map user={user}>
           <div className="flex gap-2">
-            <SideBarToggle />
+            {inBrowser ? <SideBarToggle /> : null}
             <MapZoom />
             <ModeToggle />
           </div>
