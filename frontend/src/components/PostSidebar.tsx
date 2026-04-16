@@ -1,13 +1,12 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect, useContext, Suspense } from "react";
 import { LucideSidebarClose, LucideSidebarOpen, Search } from "lucide-react";
-import { Suspense, useContext, useState } from "react";
 import blackLogo from "../assets/black-ucf-logo.png";
 import plus from "../assets/plus.svg";
 import yellowPlus from "../assets/yellow-plus.svg";
 import yellowLogo from "../assets/yellow-ucf-logo.png";
 import { AddEventModal } from "./AddEventModal";
 import { Button } from "./ui/button";
-import { Dialog, DialogTrigger } from "./ui/dialog";
+import { Dialog } from "./ui/dialog";
 import {
   Sidebar,
   SidebarContent,
@@ -15,7 +14,6 @@ import {
   SidebarHeader,
   useSidebar,
 } from "./ui/shad-sidebar";
-import { Suspense } from "react";
 import { Skeleton } from "./ui/skeleton";
 import { Input } from "./ui/input";
 import { useGeolocation } from "../lib/hooks";
@@ -30,7 +28,7 @@ export function PostSidebar({
   // posts: Post[];
   user: { firstName: string; lastName: string } | null;
 }) {
-  const [showModal, setShowModal] = useState(false);
+  // const [showModal, setShowModal] = useState(false);
   const { posts, setSearch, setPage } = useContext(PostContext);
   const [postingOpen, setPostingOpen] = useState<boolean>(false);
   const { coords, geoError, geoLoading, getLocation } = useGeolocation();
@@ -80,7 +78,7 @@ export function PostSidebar({
           />
         </div>
         <SidebarPagination />
-        {user && geoError === null && (
+        {user && geoError === "" && (
           <>
             <Button
               onClick={openModal}

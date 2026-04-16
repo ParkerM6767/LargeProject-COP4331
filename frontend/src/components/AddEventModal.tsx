@@ -40,7 +40,7 @@ async function uploadPost(title: string, imageFile: File | null, description: st
         if (imageFile) {
             formData.append("image", imageFile);
         }
-        await submitPost(formData);
+        await submitPost(formData)
         .then(refetch)
         setPostingOpen(false);
     } catch (error: any) {

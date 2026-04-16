@@ -20,7 +20,6 @@ import { Toaster } from "./components/ui/sonner"
 function App() {
   const [user, setUser] = useState<{ firstName: string, lastName: string, email: string} | null>(null);
   const [email, setEmail] = useState<string>('');
-  const [fetchedPosts, setFetchedPosts] = useState<Post[]>([]);
   const [open, setOpen] = useState<boolean>(false);
   const [loginOpen, setLoginOpen] = useState<boolean>(false);
   const [resetOpen, setResetOpen] = useState<boolean>(false);
@@ -28,7 +27,6 @@ function App() {
   const [resetToken, setResetToken] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchPosts().then(setFetchedPosts);
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
     if (token) {
@@ -45,7 +43,7 @@ function App() {
       <SidebarInset>
         {/* Everything that gets moved by the sidebar goes below */}
 
-        <Map posts={fetchedPosts}>
+        <Map user={user}>
           <Toaster/>
           <div className="flex gap-2">
             <SideBarToggle />
