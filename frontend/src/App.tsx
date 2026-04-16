@@ -40,7 +40,7 @@ function App() {
 
   return (
     <SidebarProvider className="w-screen h-screen absolute top-0 left-0">
-      <PostSidebar posts={fetchedPosts} user={user} />
+      <PostSidebar user={user} />
 
       <SidebarInset>
         {/* Everything that gets moved by the sidebar goes below */}

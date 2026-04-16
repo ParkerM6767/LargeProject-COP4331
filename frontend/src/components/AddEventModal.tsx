@@ -1,17 +1,18 @@
-import { useState } from "react";
-import { Button } from "./ui/button"
+import { useContext, useState } from "react";
+import { Button } from "./ui/button";
 import {
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogClose
+  DialogClose,
 } from "./ui/dialog";
-import { Field, FieldGroup } from "./ui/field"
-import { Input } from "./ui/input"
-import { Label } from "./ui/label"
+import { Field, FieldGroup } from "./ui/field";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { submitPost } from "../lib/fetch";
+import { PostContext } from "../lib/postContext";
 
 interface AddEventModalProps {
   setPostingOpen: (open: boolean) => void;
@@ -25,6 +26,8 @@ export function AddEventModal({setPostingOpen, geoLocation: {coords}} :AddEventM
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [description, setDescription] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState<string>('');
+    const { refetch } = useContext(PostContext);
+    
 
 async function uploadPost(title: string, imageFile: File | null, description: string) {
     try {
@@ -38,6 +41,7 @@ async function uploadPost(title: string, imageFile: File | null, description: st
             formData.append("image", imageFile);
         }
         await submitPost(formData);
+        .then(refetch)
         setPostingOpen(false);
     } catch (error: any) {
         console.error("Upload Failed:", error);

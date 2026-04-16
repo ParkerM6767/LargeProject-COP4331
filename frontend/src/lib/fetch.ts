@@ -89,24 +89,6 @@ export async function submitPost(payload: FormData): Promise<EventFormResponse> 
     }
 }
 
-export async function fetchPosts(): Promise<Post[]> {
-    try {
-        const response = await fetch("http://localhost:8000/api/posts", {
-            method: "GET",
-            credentials: "include"
-        });
-        if (!response.ok) {
-            throw new Error(`Error status: ${response.status}`);
-        }
-        const data = await response.json();
-        return data.posts;
-
-    } catch(error) {
-        console.error("Fetch Posts failed:", error);
-        throw error;
-    }
-}
-
 export async function verify( email: string | null, code: string | null) {
     try {
         const response = await fetch("http://localhost:8000/api/users/verify-email", {
@@ -187,4 +169,31 @@ export async function updatePassword( token: string | null, password: string | n
         console.error("Update Password failed:", error);
         throw error;
     }
+}
+
+export async function fetchPosts(
+  search: string = "",
+  page: number = 0,
+  limit: number = 0,
+): Promise<{ posts: Post[]; totalPosts: number }> {
+  try {
+    const url = new URL("http://localhost:8000/api/posts");
+    url.searchParams.append("search", search);
+    url.searchParams.append("page", page.toString());
+    url.searchParams.append("limit", limit.toString());
+
+    const response = await fetch(url, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error status: ${response.status}`);
+    }
+    const data = await response.json();
+    return { posts: data.posts, totalPosts: data.count };
+  } catch (error) {
+    console.error("Fetch Posts failed:", error);
+    throw error;
+  }
 }

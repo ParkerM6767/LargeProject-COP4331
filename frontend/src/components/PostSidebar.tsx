@@ -1,6 +1,13 @@
 import { useState, useCallback, useEffect } from "react";
 import { LucideSidebarClose, LucideSidebarOpen, Search } from "lucide-react";
+import { Suspense, useContext, useState } from "react";
+import blackLogo from "../assets/black-ucf-logo.png";
+import plus from "../assets/plus.svg";
+import yellowPlus from "../assets/yellow-plus.svg";
+import yellowLogo from "../assets/yellow-ucf-logo.png";
+import { AddEventModal } from "./AddEventModal";
 import { Button } from "./ui/button";
+import { Dialog, DialogTrigger } from "./ui/dialog";
 import {
   Sidebar,
   SidebarContent,
@@ -8,62 +15,23 @@ import {
   SidebarHeader,
   useSidebar,
 } from "./ui/shad-sidebar";
-import {
-  Dialog
-} from "./ui/dialog";
 import { Suspense } from "react";
 import { Skeleton } from "./ui/skeleton";
-import { AddEventModal } from "./AddEventModal";
-import yellowPlus from "../assets/yellow-plus.svg"
-import yellowLogo from "../assets/yellow-ucf-logo.png"
-import blackLogo from "../assets/black-ucf-logo.png"
-import plus from "../assets/plus.svg"
-
 import { Input } from "./ui/input";
+import { useGeolocation } from "../lib/hooks";
+import { PostContext } from "../lib/postContext";
+import { SidebarPagination } from "./SidebarPagination";
 import { LocationAlert } from "./LocationAlert";
 
-function useGeolocation() {
-  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
-  const [geoError, setGeoError] = useState<string | null>(null);
-  const [geoLoading, setGeoLoading] = useState(false);
-
-  const getLocation = useCallback(() => {
-    if (!navigator.geolocation) {
-      setGeoError('Geolocation is not supported by your browser.');
-      return;
-    }
-
-    setGeoLoading(true);
-    setGeoError(null);
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const newCoords = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        setCoords(newCoords);
-        setGeoLoading(false);
-      },
-      (err) => {
-        const messages: Record<number, string> = {
-          1: 'Location access denied. Please allow location access to report events.',
-          2: 'Location unavailable. Please try again.',
-          3: 'Location request timed out. Please try again.',
-        };
-        setGeoError(messages[err.code] || 'Failed to get location.');
-        setGeoLoading(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
-  }, []);
-
-  return { coords, geoError, geoLoading, getLocation };
-
-}
-
-
-export function PostSidebar({ posts, user }: { posts: Post[]; user: { firstName: string; lastName: string } | null}) {
+export function PostSidebar({
+  // posts,
+  user,
+}: {
+  // posts: Post[];
+  user: { firstName: string; lastName: string } | null;
+}) {
+  const [showModal, setShowModal] = useState(false);
+  const { posts, setSearch, setPage } = useContext(PostContext);
   const [postingOpen, setPostingOpen] = useState<boolean>(false);
   const { coords, geoError, geoLoading, getLocation } = useGeolocation();
 
@@ -82,29 +50,36 @@ export function PostSidebar({ posts, user }: { posts: Post[]; user: { firstName:
   return (
     <Sidebar>
       <SidebarHeader className="flex items-center">
-        <img 
+        <img
           src={blackLogo}
           width={250}
           height={250}
           className="block dark:hidden"
         />
-        <img 
+        <img
           src={yellowLogo}
           width={250}
           height={250}
           className="hidden dark:block"
         />
-        <h1 className="text-3xl semi-bold text-center px-6">Campus Community Report</h1>
+        <h1 className="text-3xl semi-bold text-center px-6">
+          Campus Community Report
+        </h1>
       </SidebarHeader>
       <SidebarContent>
         <div className="relative  mx-4 w-[18rem]  mt-2">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-black w-8 h-8" />
-          <Input 
+          <Input
             type="text"
             placeholder="Search"
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             className="h-[5vh] pl-13 text-black dark:text-white text-xl! placeholder:text-xl placeholder:text-black dark:placeholder:text-white rounded-md border-none bg-white dark:bg-zinc-500"
           />
         </div>
+        <SidebarPagination />
         {user && geoError === null && (
           <>
             <Button
@@ -157,11 +132,13 @@ export function PostSidebar({ posts, user }: { posts: Post[]; user: { firstName:
  * Display all the posts loaded, optionally with a filter in the future
  */
 function ListPosts({ posts }: { posts: Post[] }) {
-
   return (
     <>
       {posts.map((post) => (
-        <div key={post.description} className="p-4 mx-4 mt-4 border border-muted-foreground rounded-md flex">
+        <div
+          key={post._id}
+          className="p-4 mx-4 mt-4 border border-muted-foreground rounded-md"
+        >
           <img 
             className="rounded mr-3"
             src={`http://localhost:8000/images/posts/${post.imageUrl}`}
