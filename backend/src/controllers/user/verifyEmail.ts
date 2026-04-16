@@ -29,7 +29,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
 
     await user.save()
 
-    return res.json({ message: 'Email verified successfully' })
+    return res.status(200).json({ message: 'Email verified successfully' })
   }catch (error) {
     return res.status(500).json({ message: 'Server error' })
   }

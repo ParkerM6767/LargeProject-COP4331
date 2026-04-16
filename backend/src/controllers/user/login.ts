@@ -15,7 +15,7 @@ export async function login(req: Request, res: Response) {
         if (!user_query) return res.status(400).json({ "message": "invalid credentials" });
 
         const correct_credentials: boolean = await bcrypt.compare(password_unhashed, user_query.password);
-        if (!correct_credentials) return res.status(400).json({ "message": "invalid credentials" });
+        if (!correct_credentials) return res.status(400).json({ "message": "invalid password" });
 
         
         if (!user_query.isVerified) {
@@ -38,7 +38,6 @@ export async function login(req: Request, res: Response) {
             sameSite: 'strict',
             maxAge: maxTokenAge
         });
-        res.status(200).json({ id: user_query._id });
 
         res.status(200).json({
             id: user_query._id,
