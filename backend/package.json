@@ -1,8 +1,11 @@
 {
   "type": "module",
+<<<<<<< HEAD
   "scripts": {
   "test": "jest"
 },
+=======
+>>>>>>> 0147656d60d09627c88345f0c96c512de75e7a7f
   "dependencies": {
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.2",

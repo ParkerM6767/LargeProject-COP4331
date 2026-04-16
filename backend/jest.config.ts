@@ -15,4 +15,8 @@ const config: Config = {
   ]
 }
 
+<<<<<<< HEAD
 export default config
+=======
+export default config
+>>>>>>> 0147656d60d09627c88345f0c96c512de75e7a7f
