@@ -5,19 +5,31 @@ import {
   useEffect,
   useRef,
   type PropsWithChildren,
+  type Ref,
 } from "react";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import {
+  MapContainer,
+  Marker,
+  TileLayer,
+  useMap,
+  type MapContainerProps,
+} from "react-leaflet";
 import { PostContext } from "../lib/postContext";
 import { PostAnywhere } from "./PostAnywhere";
 import { useTheme } from "./ui/themes";
+import { ActivePost } from "./ActivePost";
 
 export function Map({
-  // posts,
   user,
+  activePost,
+  setActivePost,
+  ref,
   children,
 }: PropsWithChildren<{
-  // posts: Post[];
-  user: { firstName: string; lastName: string } | null;
+  user: User | null;
+  activePost: Post | null;
+  setActivePost: (post: Post | null) => void;
+  ref?: Ref<MapType | null>;
 }>) {
   const mapRef = useRef<MapType>(null);
   const divRef = useRef<HTMLDivElement>(null);
@@ -36,21 +48,37 @@ export function Map({
     return () => observer.disconnect();
   });
 
+  // Constant props for the map pulled out for readability
+  const mapConfig: Partial<MapContainerProps> = {
+    center: [28.60235, -81.2002],
+    maxBounds: [
+      [28.58163, -81.24503],
+      [28.61193, -81.17455],
+    ],
+    maxBoundsViscosity: 1,
+    zoom: 16,
+    minZoom: 13,
+    zoomControl: false,
+    doubleClickZoom: false,
+    className: "h-full",
+  };
+
   return (
     <div className="w-full h-full" ref={divRef}>
       <MapContainer
-        center={[28.60235, -81.2002]}
-        maxBounds={[
-          [28.58163, -81.24503],
-          [28.61193, -81.17455],
-        ]}
-        maxBoundsViscosity={1}
-        zoom={16}
-        minZoom={13}
-        zoomControl={false}
-        doubleClickZoom={false}
-        className="h-full"
-        ref={mapRef}
+        {...mapConfig}
+        ref={(r) => {
+          mapRef.current = r;
+
+          // Share the ref with the parent
+          if (ref) {
+            if (typeof ref === "function") {
+              ref(r);
+            } else {
+              ref.current = r;
+            }
+          }
+        }}
       >
         {/* Coloring for the map's dark mode */}
         <style>{`
@@ -67,14 +95,19 @@ export function Map({
 
         {/* Allow the map to show while posts are being loaded */}
         <Suspense fallback={<></>}>
-          <RenderPosts posts={posts} />
+          <RenderPosts posts={posts} setActivePost={setActivePost} />
         </Suspense>
 
         {/* Let the user drop a new post by clicking on the map */}
         <PostAnywhere user={user} />
 
+        {/* Details about the currently selected post */}
+        {activePost && (
+          <ActivePost post={activePost} user={user} clear={() => setActivePost(null)} />
+        )}
+
         {/* Show any children in a layer above the map */}
-        <div className="w-full h-full z-1001 relative p-4">{children}</div>
+        <div className="w-full z-1001 relative p-4">{children}</div>
       </MapContainer>
     </div>
   );
@@ -82,8 +115,15 @@ export function Map({
 
 // To use `Suspense` properly, the `use` has to happen in a separate component.
 // `use` in components is about the same as `await` in most cases
-function RenderPosts({ posts }: { posts: Post[] }) {
+function RenderPosts({
+  posts,
+  setActivePost,
+}: {
+  posts: Post[];
+  setActivePost: (post: Post | null) => void;
+}) {
   const { theme } = useTheme();
+  const map = useMap();
 
   return (
     <>
@@ -92,15 +132,19 @@ function RenderPosts({ posts }: { posts: Post[] }) {
           key={post._id}
           icon={createEventIcon(theme === "dark")}
           position={[post.latitude, post.longitude]}
-          
-        >
-          <Popup>{post.description}</Popup>
-        </Marker>
+          eventHandlers={{
+            click() {
+              map.panTo([post.latitude, post.longitude]);
+              setActivePost(post);
+            },
+          }}
+        />
       ))}
     </>
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function createEventIcon(darkmode: boolean) {
   // Gold on dark mode, black on light mode
   const color = darkmode ? "#ffc906" : "#171717";

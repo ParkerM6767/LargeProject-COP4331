@@ -19,14 +19,17 @@ import { Input } from "./ui/input";
 import { useGeolocation } from "../lib/hooks";
 import { PostContext } from "../lib/postContext";
 import { SidebarPagination } from "./SidebarPagination";
+import { type Map } from "leaflet";
 import { LocationAlert } from "./LocationAlert";
 
 export function PostSidebar({
-  // posts,
   user,
+  map,
+  setActivePost,
 }: {
-  // posts: Post[];
   user: { firstName: string; lastName: string } | null;
+  map: Map | null;
+  setActivePost: (post: Post | null) => void;
 }) {
   // const [showModal, setShowModal] = useState(false);
   const { posts, setSearch, setPage } = useContext(PostContext);
@@ -112,7 +115,7 @@ export function PostSidebar({
           <LocationAlert/>
         )}
         <Suspense fallback={<PostGlimmers />}>
-          <ListPosts posts={posts} />
+            <ListPosts posts={posts} map={map} setActivePost={setActivePost} />
         </Suspense>
       </SidebarContent>
       <SidebarFooter>
@@ -129,24 +132,36 @@ export function PostSidebar({
 /**
  * Display all the posts loaded, optionally with a filter in the future
  */
-function ListPosts({ posts }: { posts: Post[] }) {
+function ListPosts({
+  posts,
+  map,
+  setActivePost,
+}: {
+  posts: Post[];
+  map: Map | null;
+  setActivePost: (post: Post | null) => void;
+}) {
   return (
     <>
       {posts.map((post) => (
         <div
           key={post._id}
-          className="p-4 mx-4 mt-4 border border-muted-foreground rounded-md"
+          className="p-4 mx-4 mt-4 border border-muted-foreground rounded-md flex flex-row justify-between"
+          onClick={() => {
+            setActivePost(post);
+            map?.panTo([post.latitude, post.longitude]);
+          }}
         >
-          <img 
-            className="rounded mr-3"
-            src={`http://localhost:8000/images/posts/${post.imageUrl}`}
-            width={60}
-            height={60}
-          />
           <div>
             <p>{post.title}</p>
             <p>{post.description}</p>
           </div>
+          {post.imageUrl && <div className="h-full max-w-1/2"><img 
+            className="rounded mr-3 object-cover h-full w-full"
+            src={`http://localhost:8000/images/posts/${post.imageUrl}`}
+            width={60}
+            height={60}
+          /></div>}
         </div>
       ))}
     </>

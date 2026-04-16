@@ -14,19 +14,26 @@ interface Post {
   imageUrl: string;
   latitude: number;
   longitude: number;
-  title: string
-  upvotes: number;
-  downvotes: number;
+  title: string;
+  upvote: number;
+  downvote: number;
+  userUpvoted: boolean;
+  userDownvoted: boolean;
+}
+
+interface User {
+  firstName: string;
+  lastName: string;
 }
 
 interface LoginForm {
-  email: string,
-  password: string
+  email: string;
+  password: string;
 }
 
-interface SignupForm extends LoginForm{
-  first_name: string,
-  last_name: string
+interface SignupForm extends LoginForm {
+  first_name: string;
+  last_name: string;
 }
 
 interface EventFormResponse {

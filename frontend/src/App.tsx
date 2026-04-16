@@ -1,7 +1,7 @@
 // import { useMemo } from "react";
 import { Map } from "./components/Map";
 import { MapZoom } from "./components/MapZoom";
-import { useState, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./index.css";
 import { LoginModal } from "./components/LoginModal";
 import { Button } from "./components/ui/button";
@@ -9,7 +9,9 @@ import { Dialog } from "./components/ui/dialog";
 import { PostSidebar, SideBarToggle } from "./components/PostSidebar";
 import { SidebarInset, SidebarProvider } from "./components/ui/shad-sidebar";
 import { ModeToggle } from "./components/ui/themes";
-import { fetchPosts, logout } from "./lib/fetch";
+import { type Map as MapType } from "leaflet";
+import { PostContext } from "./lib/postContext";
+import { logout } from "./lib/fetch";
 import { VerifyEmailModal } from "./components/VerifyEmailModal";
 import { ForgotPasswordModal } from "./components/ForgotPasswordModal";
 import { Toaster } from "./components/ui/sonner"
@@ -26,6 +28,20 @@ function App() {
   const [hasClickedLogin, setHasClickedLogin] = useState(false);
   const [resetToken, setResetToken] = useState<string | null>(null);
 
+  const [activePost, setActivePost] = useState<Post | null>(null);
+  const { posts } = useContext(PostContext);
+
+  // For the post sidebar to get access to the map, it has to use a ref,
+  // but a ref callback is used instead of useRef to trigger a refresh
+  const [map, setMap] = useState<MapType | null>(null);
+
+  // Whenever the posts update, update the active post to the most recent version
+  useEffect(() => {
+    setActivePost(
+      (oldActive) => posts.find((p) => p._id === oldActive?._id) || null,
+    );
+  }, [posts]);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
@@ -38,12 +54,17 @@ function App() {
 
   return (
     <SidebarProvider className="w-screen h-screen absolute top-0 left-0">
-      <PostSidebar user={user} />
+      <PostSidebar user={user} map={map} setActivePost={setActivePost} />
 
       <SidebarInset>
         {/* Everything that gets moved by the sidebar goes below */}
 
-        <Map user={user}>
+        <Map
+          user={user}
+          activePost={activePost}
+          setActivePost={setActivePost}
+          ref={setMap}
+        >
           <Toaster/>
           <div className="flex gap-2">
             <SideBarToggle />

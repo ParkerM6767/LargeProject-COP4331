@@ -62,7 +62,7 @@ export function SidebarPagination() {
 
         {/* Current+1, show if not on last page */}
         <PaginationItem
-          className={cn(page !== totalPages || "invisible *:transition-none")}
+          className={cn(page < totalPages || "invisible *:transition-none")}
         >
           <PaginationLink
             className="border rounded-md border-primary-foreground"
