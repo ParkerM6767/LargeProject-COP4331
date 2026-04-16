@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { login, signup } from "../lib/fetch";
+import { forgotPassword, login, signup } from "../lib/fetch";
 import {
   DialogContent,
   DialogFooter,
@@ -7,19 +7,24 @@ import {
   DialogTitle,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
+import { toast } from "sonner"
 
 interface ModalProps {
-  onLoginSuccess: (user: { firstName: string; lastName: string }) => void;
+  onLoginSuccess: (user: { firstName: string; lastName: string, email: string }) => void;
+  onLoginFailure: (email: string) => void;
+  setVerifyOpen: (open: boolean) => void;
+  setLoginOpen: (open: boolean) => void;
+  setResetOpen: (open: boolean) => void;
 }
 
-export function LoginModal({ onLoginSuccess }: ModalProps) {
+export function LoginModal({ onLoginSuccess, onLoginFailure, setVerifyOpen, setLoginOpen}: ModalProps) {
   const [loggingIn, setLoggingIn] = useState<boolean>(true);
-
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   function loginPayload(email: string, password: string): LoginForm {
     const payload = {
@@ -30,13 +35,6 @@ export function LoginModal({ onLoginSuccess }: ModalProps) {
   }
 
   function signupPayload(firstName: string, lastName: string, email: string, password: string): SignupForm {
-    // Confirm that email string has an @ucf.edu
-    if (!email.endsWith("@ucf.edu")) {
-      // Remove this alert later; only for testing atm
-      alert("You need a valid ucf.edu email in order to sign up.");
-      throw new Error("Invalid email. Please use your UCF email.");
-    }
-
     const payload = {
       first_name: firstName,
       last_name: lastName,
@@ -54,10 +52,25 @@ export function LoginModal({ onLoginSuccess }: ModalProps) {
       } else {
         data = await signup(signupPayload(firstName, lastName, email, password));
       }
-      onLoginSuccess({ firstName: data.firstName, lastName: data.lastName });
-    } catch (error) {
-      console.error("Error:", error);
+      onLoginSuccess({ firstName: data.firstName, lastName: data.lastName, email: data.email });
+    } catch (error: any) {
+      onLoginFailure(email);
+      if (error.status === 403 || error.response?.status === 403) {
+        setLoginOpen(false);
+        setVerifyOpen(true);
+      } else if (!email.endsWith("@ucf.edu")) {
+        setErrorMessage("Invalid email. Please use your UCF email.");
+      } else if (error.message === "invalid password" || "invalid credentials") {
+        setErrorMessage(error.message)
+      }
+      console.error("Error:", error.message);
     }
+  }
+
+  function sendResetLink() {
+    setLoginOpen(false)
+    forgotPassword(email);
+    toast.success("Reset link has been sent to email if it exists", { position: "top-center" })
   }
 
   return (
@@ -68,7 +81,11 @@ export function LoginModal({ onLoginSuccess }: ModalProps) {
             {loggingIn === true ? "Login" : "Sign Up"}
           </DialogTitle>
         </DialogHeader>
-
+        {errorMessage && (
+          <div className="flex justify-center text-red-500">
+            <p>{errorMessage}</p>
+          </div>
+        )}
         {loggingIn === false && (
           <>
             <input
@@ -101,6 +118,15 @@ export function LoginModal({ onLoginSuccess }: ModalProps) {
           type="password"
           placeholder="Password"
         />
+        {errorMessage === "invalid password" && (
+          <a 
+            className="underline text-blue-500 select-none" 
+            href="#"
+            onClick={sendResetLink}
+          >
+            Forgot password?
+          </a>
+        )}
         {loggingIn === false && (
           <>
             <input
@@ -113,7 +139,6 @@ export function LoginModal({ onLoginSuccess }: ModalProps) {
             {password !== confirmPassword && <div>Passwords Don't match</div>}
           </>
         )}
-
         <DialogFooter className="flex flex-row sm:justify-between">
           <p
             className="content-center underline text-blue-500 select-none"

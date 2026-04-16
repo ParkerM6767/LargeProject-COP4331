@@ -1,12 +1,12 @@
+import { useState, useEffect, useContext, Suspense } from "react";
 import { LucideSidebarClose, LucideSidebarOpen, Search } from "lucide-react";
-import { Suspense, useContext, useState } from "react";
 import blackLogo from "../assets/black-ucf-logo.png";
 import plus from "../assets/plus.svg";
 import yellowPlus from "../assets/yellow-plus.svg";
 import yellowLogo from "../assets/yellow-ucf-logo.png";
 import { AddEventModal } from "./AddEventModal";
 import { Button } from "./ui/button";
-import { Dialog, DialogTrigger } from "./ui/dialog";
+import { Dialog } from "./ui/dialog";
 import {
   Sidebar,
   SidebarContent,
@@ -20,6 +20,7 @@ import { useGeolocation } from "../lib/hooks";
 import { PostContext } from "../lib/postContext";
 import { SidebarPagination } from "./SidebarPagination";
 import { type Map } from "leaflet";
+import { LocationAlert } from "./LocationAlert";
 
 export function PostSidebar({
   user,
@@ -30,11 +31,22 @@ export function PostSidebar({
   map: Map | null;
   setActivePost: (post: Post | null) => void;
 }) {
-  const [showModal, setShowModal] = useState(false);
+  // const [showModal, setShowModal] = useState(false);
   const { posts, setSearch, setPage } = useContext(PostContext);
+  const [postingOpen, setPostingOpen] = useState<boolean>(false);
+  const { coords, geoError, geoLoading, getLocation } = useGeolocation();
 
-  const { coords, getLocation, clearCoords } = useGeolocation();
-  // What should we do if the user rejects?
+  useEffect(() => {
+    getLocation();
+  }, [])
+  
+  function openModal() {
+    if (coords) {
+      setPostingOpen(true);
+    } else {
+      getLocation();
+    }
+  }
 
   return (
     <Sidebar>
@@ -68,51 +80,43 @@ export function PostSidebar({
             className="h-[5vh] pl-13 text-black dark:text-white text-xl! placeholder:text-xl placeholder:text-black dark:placeholder:text-white rounded-md border-none bg-white dark:bg-zinc-500"
           />
         </div>
-
         <SidebarPagination />
-
-        <div className="overflow-auto">
-          {user && (
-            <Dialog
-              open={showModal}
-              onOpenChange={(state) => {
-                if (state) {
-                  setShowModal(true);
-                  getLocation();
-                } else {
-                  setShowModal(false);
-                  clearCoords();
-                }
-              }}
+        {user && geoError === "" && (
+          <>
+            <Button
+              onClick={openModal}
+              size="lg"
+              className=" mx-4 my-6 text-2xl"                            
+              disabled={geoLoading}
             >
-              <DialogTrigger asChild>
-                <Button size="lg" className=" mx-4 my-6 text-2xl">
-                  <img
-                    src={plus}
-                    width={50}
-                    height={50}
-                    className="block dark:hidden"
-                  />
-                  <img
-                    src={yellowPlus}
-                    width={50}
-                    height={50}
-                    className="hidden dark:block"
-                  />
-                  Post Event
-                </Button>
-              </DialogTrigger>
-              <AddEventModal
-                latitude={coords?.lat ?? null}
-                longitude={coords?.lng ?? null}
-                closeModal={() => setShowModal(false)}
+              <img 
+                src={plus} 
+                width={50} 
+                height={50} 
+                className="block dark:hidden"
+              />
+              <img 
+                src={yellowPlus} 
+                width={50} 
+                height={50} 
+                className="hidden dark:block"
+              />
+              Post Event
+            </Button>
+            <Dialog open={postingOpen} onOpenChange={setPostingOpen}>
+              <AddEventModal 
+                setPostingOpen={setPostingOpen} 
+                geoLocation={{coords}}
               />
             </Dialog>
-          )}
-          <Suspense fallback={<PostGlimmers />}>
+          </>
+        )}
+        {user && geoError === 'Location access denied. Please allow location access to report events.' && (
+          <LocationAlert/>
+        )}
+        <Suspense fallback={<PostGlimmers />}>
             <ListPosts posts={posts} map={map} setActivePost={setActivePost} />
-          </Suspense>
-        </div>
+        </Suspense>
       </SidebarContent>
       <SidebarFooter>
         {user && (
@@ -148,7 +152,12 @@ function ListPosts({
             map?.panTo([post.latitude, post.longitude]);
           }}
         >
-          {post.imageUrl && <img src={post.imageUrl} />}
+          {post.imageUrl && <img 
+            className="rounded mr-3"
+            src={`http://localhost:8000/images/posts/${post.imageUrl}`}
+            width={60}
+            height={60}
+          />}
           <div>
             <p>{post.title}</p>
             <p>{post.description}</p>
