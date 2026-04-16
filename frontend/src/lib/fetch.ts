@@ -74,29 +74,27 @@ export async function signup(payload: SignupForm) {
     }
 }
 
-export async function submitPost(payload: EventFormResponse) {
+export async function submitPost(payload: FormData) {
   try {
     const response = await fetch(import.meta.env.VITE_API_BASE + "/api/posts", {
       method: "POST",
       credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: payload,
     });
 
-        const data = await response.json();
+    const data = await response.json();
 
-        if (!response.ok) {
-            const err = new Error(data.message || `Error status: ${response.status}`);
-            (err as any).status = response.status;
-            throw err;
-        }
-
-        return data as EventFormResponse;
-
-    } catch(error) {
-        console.error("Post submission failed:", error);
-        throw error;
+    if (!response.ok) {
+      const err = new Error(data.message || `Error status: ${response.status}`);
+      (err as any).status = response.status;
+      throw err;
     }
+    return data as EventFormResponse;
+
+  } catch(error) {
+    console.error("Post submission failed:", error);
+    throw error;
+  }
 }
 
 export async function verify( email: string | null, code: string | null) {
