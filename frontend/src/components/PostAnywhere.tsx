@@ -81,13 +81,14 @@ export function PostAnywhere({
         }}
       >
         <AddEventModal
-          longitude={postCoords?.lng || null}
-          latitude={postCoords?.lat || null}
-          closeModal={() => {
-            setShowModal(false);
-            setPostCoords(null);
-            setMenuCoords(null);
-          }}
+          geoLocation={{coords: postCoords}}
+          setPostingOpen={(open) => {
+            if (!open) {
+              setShowModal(false);
+              setPostCoords(null);
+              setMenuCoords(null);
+            }}
+          }
         />
       </Dialog>
     </>
