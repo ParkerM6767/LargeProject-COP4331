@@ -15,13 +15,6 @@ export async function getPosts (req: Request, res: Response) {
       .skip(skip)
       .limit(limit)
       .select(
-<<<<<<< HEAD
-        'title description imageUrl longitude latitude upvote downvote createdAt creatorId',
-      );
-    const count = await Post.find(filter).countDocuments();
-
-    res.status(200).json({ message: 'Posts retrieved successfully', posts, count })
-=======
         'title description imageUrl longitude latitude upvote downvote createdAt creatorId'
       )
     const count = await Post.countDocuments(filter)
@@ -29,7 +22,6 @@ export async function getPosts (req: Request, res: Response) {
     res
       .status(200)
       .json({ message: 'Posts retrieved successfully', posts, count })
->>>>>>> 0147656d60d09627c88345f0c96c512de75e7a7f
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Failed to get posts' })
