@@ -7,6 +7,18 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
+  },
+  logger: true,
+  connectionTimeout: 5000,
+  debug: true,
+})
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.log("Email verification error:\n\n")
+    console.error(error);
+  } else {
+    console.log("Email Server is ready to take our messages");
   }
 })
 
