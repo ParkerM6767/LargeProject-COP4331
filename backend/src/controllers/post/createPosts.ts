@@ -1,9 +1,9 @@
+import 'dotenv/config'
 import { Request, Response } from 'express'
 import { Post } from '../../models/post.model'
 import fs from 'fs'
 import path from 'path'
 import mongoose from 'mongoose'
-const staticImagePath = path.join(process.cwd(), 'public/images/posts/')
 
 // POST /
 export async function createPost (req: Request, res: Response) {
@@ -33,28 +33,34 @@ export async function createPost (req: Request, res: Response) {
         .json({ message: 'Longitude and latitude must be numbers' })
     }
 
-    const topLeft = process.env.TOP_LEFT_CORNER_BOUNDS?.split(',')
-    const bottomRight = process.env.BOTTOM_RIGHT_CORNER_BOUNDS?.split(',')
+    const topRight = process.env.TOP_RIGHT_CORNER_BOUNDS?.split(',')
+    const bottomLeft = process.env.BOTTOM_LEFT_CORNER_BOUNDS?.split(',')
+
+    console.log(process.env.TOP_RIGHT_CORNER_BOUNDS)
+    console.log(process.env.BOTTOM_LEFT_CORNER_BOUNDS)
 
     if (
-      !topLeft ||
-      !bottomRight ||
-      topLeft.length !== 2 ||
-      bottomRight.length !== 2
+      !topRight ||
+      !bottomLeft ||
+      topRight.length !== 2 ||
+      bottomLeft.length !== 2
     ) {
       throw new Error('Invalid map boundaries')
     }
 
-    const [maxLat, minLng] = topLeft.map(Number)
-    const [minLat, maxLng] = bottomRight.map(Number)
+    const [maxLat, maxLng] = topRight.map(Number)
+    const [minLat, minLng] = bottomLeft.map(Number)
 
     if (
+      longitude > maxLng ||
+      longitude < minLng ||
       latitude < minLat ||
-      latitude > maxLat ||
-      longitude < maxLng ||
-      longitude > minLng
+      latitude > maxLat
     ) {
-      return res.status(400).json({ message: 'Coordinates are out of bounds' })
+      return res.status(400).json({
+        message:
+          'Coordinates are out of bounds, make sure you are in the UCF area'
+      })
     }
     const objectId = new mongoose.Types.ObjectId()
     let newFileName = ''
