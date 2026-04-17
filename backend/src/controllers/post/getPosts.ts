@@ -53,12 +53,18 @@ export async function getPostById (req: Request, res: Response) {
 
     const { upvotedBy, downvotedBy, ...rest } = post.toObject()
 
+    const userId = req.user ?? null
+
     res.status(200).json({
       message: 'Post retrieved successfully',
       post: {
         ...rest,
-        userUpvoted: upvotedBy.some(id => id.toString() === req.user),
-        userDownvoted: downvotedBy.some(id => id.toString() === req.user)
+        userUpvoted: userId
+          ? upvotedBy.some(id => id.toString() === userId)
+          : false,
+        userDownvoted: userId
+          ? downvotedBy.some(id => id.toString() === userId)
+          : false
       }
     })
   } catch (err) {
