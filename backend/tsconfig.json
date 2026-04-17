@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": ["ES2023"],
+    "module": "es2022",
+    "moduleResolution": "node",
+    "rootDir": "./src",
+    "skipLibCheck": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "types": ["jest", "node"]
+  },
+  "include": ["src/**/*", "jest.setup.ts"],
+  "exclude": ["node_modules", "dist"]
+}
