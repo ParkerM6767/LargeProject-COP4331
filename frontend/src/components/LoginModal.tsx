@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { forgotPassword, login, signup } from "../lib/fetch";
 import {
   DialogContent,
@@ -26,6 +26,13 @@ export function LoginModal({ onLoginSuccess, onLoginFailure, setVerifyOpen, setL
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
+  const disabled = useMemo(() => {
+    if (loggingIn) {
+      return email === "" || password === "" || !email.endsWith("@ucf.edu");
+    }
+    return firstName === "" || lastName === "" || email === "" || password === "" || password !== confirmPassword;
+  }, [loggingIn, firstName, lastName, email, password, confirmPassword]);
+
   function loginPayload(email: string, password: string): LoginForm {
     const payload = {
       email: email,
@@ -45,24 +52,30 @@ export function LoginModal({ onLoginSuccess, onLoginFailure, setVerifyOpen, setL
   }
 
   async function submitForm() {
+    if (!email.endsWith("@ucf.edu")) {
+      setErrorMessage("Invalid email. Please use your UCF email.");
+      return;
+    }
     try {
       let data;
       if (loggingIn === true) {
         data = await login(loginPayload(email, password));
+        onLoginSuccess({ firstName: data.firstName, lastName: data.lastName, email: data.email });
       } else {
         data = await signup(signupPayload(firstName, lastName, email, password));
+        onLoginFailure(email);
+        setLoginOpen(false);
+        setVerifyOpen(true);
       }
-      onLoginSuccess({ firstName: data.firstName, lastName: data.lastName, email: data.email });
     } catch (error: any) {
-      onLoginFailure(email);
+      setErrorMessage(error.message)
       if (error.status === 403 || error.response?.status === 403) {
         setLoginOpen(false);
         setVerifyOpen(true);
       } else if (!email.endsWith("@ucf.edu")) {
         setErrorMessage("Invalid email. Please use your UCF email.");
-      } else if (error.message === "invalid password" || "invalid credentials") {
-        setErrorMessage(error.message)
-      }
+      } 
+      onLoginFailure(email);
       console.error("Error:", error.message);
     }
   }
@@ -149,6 +162,7 @@ export function LoginModal({ onLoginSuccess, onLoginFailure, setVerifyOpen, setL
           <Button
             className="py-2 px-4 rounded text-sm"
             onClick={submitForm}
+            disabled={disabled}
           >
             {loggingIn === true ? "Login" : "Sign Up"}
           </Button>

@@ -99,7 +99,7 @@ export async function submitPost(payload: FormData) {
 
 export async function verify( email: string | null, code: string | null) {
     try {
-        const response = await fetch("http://localhost:8000/api/users/verify-email", {
+        const response = await fetch(import.meta.env.VITE_API_BASE + "/api/users/verify-email", {
             method: "POST",
             credentials: "include",
             headers: {"Content-Type": "application/json"},
@@ -127,7 +127,7 @@ export async function verify( email: string | null, code: string | null) {
 
 export async function forgotPassword( email: string | null) {
     try {
-        const response = await fetch("http://localhost:8000/api/users/forgot-password", {
+        const response = await fetch(import.meta.env.VITE_API_BASE + "/api/users/forgot-password", {
             method: "POST",
             credentials: "include",
             headers: {"Content-Type": "application/json"},
@@ -153,7 +153,7 @@ export async function forgotPassword( email: string | null) {
 
 export async function updatePassword( token: string | null, password: string | null) {
     try {
-        const response = await fetch("http://localhost:8000/api/users/reset-password", {
+        const response = await fetch(import.meta.env.VITE_API_BASE + "/api/users/reset-password", {
             method: "PUT",
             credentials: "include",
             headers: {"Content-Type": "application/json"},

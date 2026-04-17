@@ -113,6 +113,8 @@ export function ActivePost({
             {post.imageUrl && (
               <div className=" m-auto">
                 <img
+                width={120}
+                height={120}
                   src={
                     import.meta.env.VITE_API_BASE +
                     `/images/posts/${post.imageUrl}`
