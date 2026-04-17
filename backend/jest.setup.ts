@@ -1,5 +1,9 @@
 import mongoose from 'mongoose'
 
+jest.mock('./src/db', () => ({
+  connectDB: jest.fn()
+}))
+
 beforeAll(() => {
   process.env.TOP_LEFT_CORNER_BOUNDS = '90,180'
   process.env.BOTTOM_RIGHT_CORNER_BOUNDS = '-90,-180'
