@@ -2,21 +2,15 @@
   "compilerOptions": {
     "target": "ES2023",
     "lib": ["ES2023"],
-<<<<<<< HEAD
     "module": "CommonJS",
-=======
     "module": "es2022",
->>>>>>> 0147656d60d09627c88345f0c96c512de75e7a7f
     "moduleResolution": "node",
     "outDir": "./dist",
     "rootDir": "./src",
     "skipLibCheck": true,
     "strict": true,
     "esModuleInterop": true,
-<<<<<<< HEAD
     "allowSyntheticDefaultImports": true,
-=======
->>>>>>> 0147656d60d09627c88345f0c96c512de75e7a7f
     "types": ["jest", "node"]
   },
   "include": ["src/**/*", "jest.setup.ts"],
