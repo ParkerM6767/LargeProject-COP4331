@@ -1,7 +1,6 @@
 {
   "type": "module",
   "scripts": {
-<<<<<<< HEAD
     "lint": "prettier . --write && eslint . --fix",
     "test": "jest"
   },
@@ -9,20 +8,13 @@
     "@eslint/js": "^9.39.3",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
+    "@types/multer": "^2.1.0",
     "@types/nodemailer": "^8.0.0",
     "@types/supertest": "^7.2.0",
-=======
-    "lint": "prettier . --write && eslint . --fix"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.39.3",
-    "@types/multer": "^2.1.0",
->>>>>>> 0147656d60d09627c88345f0c96c512de75e7a7f
     "eslint": "^9.39.3",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
-<<<<<<< HEAD
     "jest": "^30.3.0",
     "minimatch": "^10.2.4",
     "prettier": "^3.8.1",
@@ -33,15 +25,7 @@
   "dependencies": {
     "express": "^5.2.1",
     "mongoose": "^8.23.0",
-    "nodemailer": "^8.0.5"
-=======
-    "minimatch": "^10.2.4",
-    "prettier": "^3.8.1",
-    "typescript-eslint": "^8.56.1"
-  },
-  "dependencies": {
-    "mongoose": "^8.23.0",
+    "nodemailer": "^8.0.5",
     "multer": "^2.1.1"
->>>>>>> 0147656d60d09627c88345f0c96c512de75e7a7f
   }
 }
