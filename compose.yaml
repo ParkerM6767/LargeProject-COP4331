@@ -38,6 +38,7 @@ services:
       EMAIL_USER: ${EMAIL_USER}
       EMAIL_PASS: ${EMAIL_PASS}
       EMAIL_HOST: ${EMAIL_HOST}
+      HOST_URL: ${HOST_URL}
       BOTTOM_LEFT_CORNER_BOUNDS: ${BOTTOM_LEFT_CORNER_BOUNDS}
       TOP_RIGHT_CORNER_BOUNDS: ${TOP_RIGHT_CORNER_BOUNDS}
     command: bash -c "npm i && npx nodemon -L --exec tsx src/server.ts"

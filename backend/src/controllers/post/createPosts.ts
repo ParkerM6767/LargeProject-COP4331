@@ -7,7 +7,7 @@ import mongoose from 'mongoose'
 
 const staticImagePath = path.join(
   import.meta.dirname,
-  '../../../public/images/posts'
+  '../../../public/images/posts/'
 )
 
 // POST /
