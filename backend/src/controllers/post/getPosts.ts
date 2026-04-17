@@ -15,13 +15,30 @@ export async function getPosts (req: Request, res: Response) {
       .skip(skip)
       .limit(limit)
       .select(
-        'title description imageUrl longitude latitude upvote downvote createdAt creatorId'
+        'title description imageUrl longitude latitude upvote upvotedBy downvote downvotedBy createdAt creatorId'
       )
-    const count = await Post.countDocuments(filter)
+    const count = await Post.find(filter).countDocuments()
 
-    res
-      .status(200)
-      .json({ message: 'Posts retrieved successfully', posts, count })
+    const userId = req.user ?? null
+
+    const results = posts.map(post => {
+      const { upvotedBy, downvotedBy, ...rest } = post.toObject()
+      return {
+        ...rest,
+        userUpvoted: userId
+          ? upvotedBy.some(id => id.toString() === userId)
+          : false,
+        userDownvoted: userId
+          ? downvotedBy.some(id => id.toString() === userId)
+          : false
+      }
+    })
+
+    res.status(200).json({
+      message: 'Posts retrieved successfully',
+      posts: results,
+      count
+    })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Failed to get posts' })
@@ -33,14 +50,29 @@ export async function getPostById (req: Request, res: Response) {
   try {
     const postId = req.params.id
     const post = await Post.findById(postId).select(
-      'title description imageUrl longitude latitude upvote downvote createdAt'
+      'title description imageUrl longitude latitude upvote upvotedBy downvote downvotedBy createdAt'
     )
 
     if (!post) {
       return res.status(404).json({ message: 'Post not found' })
     }
 
-    res.status(200).json({ message: 'Post retrieved successfully', post })
+    const { upvotedBy, downvotedBy, ...rest } = post.toObject()
+
+    const userId = req.user ?? null
+
+    res.status(200).json({
+      message: 'Post retrieved successfully',
+      post: {
+        ...rest,
+        userUpvoted: userId
+          ? upvotedBy.some(id => id.toString() === userId)
+          : false,
+        userDownvoted: userId
+          ? downvotedBy.some(id => id.toString() === userId)
+          : false
+      }
+    })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Failed to get post' })
@@ -55,14 +87,26 @@ export async function getPostsByUserId (req: Request, res: Response) {
     const posts = await Post.find({ creatorId: userId })
       .sort({ createdAt: -1 })
       .select(
-        'title description imageUrl longitude latitude upvote downvote createdAt'
+        'title description imageUrl longitude latitude upvote upvotedBy downvote downvotedBy createdAt'
       )
 
     if (!posts || posts.length === 0) {
       return res.status(404).json({ message: 'No posts found for this user' })
     }
 
-    res.status(200).json({ message: 'Posts retrieved successfully', posts })
+    const results = posts.map(post => {
+      const { upvotedBy, downvotedBy, ...rest } = post.toObject()
+      return {
+        ...rest,
+        userUpvoted: upvotedBy.some(id => id.toString() === req.user),
+        userDownvoted: downvotedBy.some(id => id.toString() === req.user)
+      }
+    })
+
+    res.status(200).json({
+      message: 'Post retrieved successfully',
+      posts: results
+    })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Failed to get posts' })

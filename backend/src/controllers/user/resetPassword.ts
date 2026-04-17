@@ -3,6 +3,7 @@ import { User } from '../../models/user.model'
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import { forgotPasswordEmail } from '../../utils/email'
+import process from 'process'
 
 // POST /forgot-password
 export async function forgotPassword (req: Request, res: Response) {
@@ -28,7 +29,7 @@ export async function forgotPassword (req: Request, res: Response) {
 
     await user.save()
 
-    await forgotPasswordEmail(email, token, `${req.protocol}://${req.get('host')}`)
+    await forgotPasswordEmail(email, token, process.env.HOST_URL as string)
 
     res
       .status(200)

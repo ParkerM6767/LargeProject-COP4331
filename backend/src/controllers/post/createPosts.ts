@@ -41,9 +41,6 @@ export async function createPost (req: Request, res: Response) {
     const topRight = process.env.TOP_RIGHT_CORNER_BOUNDS?.split(',')
     const bottomLeft = process.env.BOTTOM_LEFT_CORNER_BOUNDS?.split(',')
 
-    console.log(process.env.TOP_RIGHT_CORNER_BOUNDS)
-    console.log(process.env.BOTTOM_LEFT_CORNER_BOUNDS)
-
     if (
       !topRight ||
       !bottomLeft ||
@@ -62,10 +59,7 @@ export async function createPost (req: Request, res: Response) {
       latitude < minLat ||
       latitude > maxLat
     ) {
-      return res.status(400).json({
-        message:
-          'Coordinates are out of bounds, make sure you are in the UCF area'
-      })
+      return res.status(400).json({ message: 'Coordinates are out of bounds, make sure you are in the UCF area' })
     }
     const objectId = new mongoose.Types.ObjectId()
     let newFileName = ''

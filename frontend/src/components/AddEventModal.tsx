@@ -14,26 +14,45 @@ import { Textarea } from "./ui/textarea";
 import { submitPost } from "../lib/fetch";
 import { PostContext } from "../lib/postContext";
 
-async function uploadPost(payload: EventForm) {
-  // TODO: verify the post was submitted and have error feedback
-  await submitPost(payload);
+interface AddEventModalProps {
+  setPostingOpen: (open: boolean) => void;
+  geoLocation: {
+    coords: { lat: number; lng: number } | null;
+  };
 }
 
 export function AddEventModal({
-  longitude = 0,
-  latitude = 0,
-  closeModal,
-}: {
-  longitude: number | null;
-  latitude: number | null;
-  closeModal: () => void;
-}) {
+  setPostingOpen,
+  geoLocation: { coords },
+}: AddEventModalProps) {
   const [title, setTitle] = useState<string>("");
-  const [imageUrl, setImageUrl] = useState<string>("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [description, setDescription] = useState<string>("");
-
-  const [isSending, setSending] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const { refetch } = useContext(PostContext);
+
+  async function uploadPost(
+    title: string,
+    imageFile: File | null,
+    description: string,
+  ) {
+    try {
+      setErrorMessage("");
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("longitude", String(coords?.lng));
+      formData.append("latitude", String(coords?.lat));
+      formData.append("description", description);
+      if (imageFile) {
+        formData.append("image", imageFile);
+      }
+      await submitPost(formData).then(refetch);
+      setPostingOpen(false);
+    } catch (error: any) {
+      console.error("Upload Failed:", error);
+      setErrorMessage(error?.message || "Failed to create post");
+    }
+  }
 
   return (
     <>
@@ -53,59 +72,34 @@ export function AddEventModal({
               />
             </Field>
             <Field>
-              <Label htmlFor="longitude">Longitude</Label>
+              <Label htmlFor="username-1">Upload Image</Label>
               <Input
-                value={longitude || "Loading..."}
-                disabled
-                id="longitude"
-              />
-              <Label htmlFor="latitude">Latitude</Label>
-              <Input value={latitude || "Loading..."} disabled id="latitude" />
-            </Field>
-            <Field>
-              <Label>Upload Image</Label>
-              <Input
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
+                onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
                 type="file"
+                id="image-upload"
                 accept="image/*"
               />
             </Field>
             <Field>
-              <Label htmlFor="description">Post Description</Label>
+              <Label htmlFor="username-1">Post Description</Label>
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                id="description"
+                id="username-1"
                 className="h-[10vh]"
               />
             </Field>
           </FieldGroup>
+          {errorMessage && (
+            <div className="flex justify-center text-red-500">
+              <p>{errorMessage}</p>
+            </div>
+          )}
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button
-              disabled={isSending}
-              onClick={() => {
-                // Prevent multiple clicks at once
-                setSending(true);
-
-                uploadPost({
-                  title,
-                  longitude: longitude || 0,
-                  latitude: latitude || 0,
-                  imageUrl,
-                  description,
-                })
-                  // Close the modal when sent
-                  .then(closeModal)
-                  // Once posted, update all posts
-                  .then(refetch)
-                  // Un-disable the button
-                  .finally(() => setSending(false));
-              }}
-            >
+            <Button onClick={() => uploadPost(title, imageFile, description)}>
               Submit
             </Button>
           </DialogFooter>
