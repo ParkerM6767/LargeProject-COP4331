@@ -1,4 +1,8 @@
 import type { Config } from 'jest'
+import dotenv from 'dotenv'
+import path from 'path'
+
+dotenv.config({ path: path.resolve(__dirname, '../.env') })
 
 const config: Config = {
   preset: 'ts-jest',
@@ -15,8 +19,4 @@ const config: Config = {
   ]
 }
 
-<<<<<<< HEAD
 export default config
-=======
-export default config
->>>>>>> 0147656d60d09627c88345f0c96c512de75e7a7f
