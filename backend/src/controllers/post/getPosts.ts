@@ -19,12 +19,18 @@ export async function getPosts (req: Request, res: Response) {
       )
     const count = await Post.find(filter).countDocuments()
 
+    const userId = req.user ?? null
+
     const results = posts.map(post => {
       const { upvotedBy, downvotedBy, ...rest } = post.toObject()
       return {
         ...rest,
-        userUpvoted: upvotedBy.some(id => id.toString() === req.user),
-        userDownvoted: downvotedBy.some(id => id.toString() === req.user)
+        userUpvoted: userId
+          ? upvotedBy.some(id => id.toString() === userId)
+          : false,
+        userDownvoted: userId
+          ? downvotedBy.some(id => id.toString() === userId)
+          : false
       }
     })
 
