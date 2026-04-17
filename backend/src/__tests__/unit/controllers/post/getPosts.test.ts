@@ -10,12 +10,8 @@ import { Post } from '../../../../models/post.model'
 jest.mock('../../../../models/post.model', () => ({
   Post: {
     find: jest.fn(),
-<<<<<<< HEAD
-    findById: jest.fn()
-=======
     findById: jest.fn(),
     countDocuments: jest.fn()
->>>>>>> 0147656d60d09627c88345f0c96c512de75e7a7f
   }
 }))
 
@@ -44,11 +40,7 @@ const mockPosts = [
     latitude: 20,
     upvote: 5,
     downvote: 2,
-<<<<<<< HEAD
-    createdAt: '2023-01-01T00:00:00.000Z',
-=======
     createdAt: '2023-01-01T00:00:00.000Z'
->>>>>>> 0147656d60d09627c88345f0c96c512de75e7a7f
   },
   {
     _id: '2',
@@ -66,12 +58,6 @@ const mockPosts = [
 // -------- Tests --------------------------------------------------------
 
 describe('GET /getPosts', () => {
-<<<<<<< HEAD
-  let chain: any
-
-  beforeEach(() => {
-    // Recreate fresh chain before every test so call counts don't bleed
-=======
   let chain: {
     sort: jest.Mock
     skip: jest.Mock
@@ -80,7 +66,6 @@ describe('GET /getPosts', () => {
   }
 
   beforeEach(() => {
->>>>>>> 0147656d60d09627c88345f0c96c512de75e7a7f
     chain = {
       sort: jest.fn().mockReturnThis(),
       skip: jest.fn().mockReturnThis(),
@@ -88,10 +73,7 @@ describe('GET /getPosts', () => {
       select: jest.fn().mockResolvedValue(mockPosts)
     }
     ;(Post.find as jest.Mock).mockReturnValue(chain)
-<<<<<<< HEAD
-=======
     ;(Post.countDocuments as jest.Mock).mockResolvedValue(mockPosts.length)
->>>>>>> 0147656d60d09627c88345f0c96c512de75e7a7f
   })
 
   it('should return a list of posts with default pagination', async () => {
@@ -118,10 +100,7 @@ describe('GET /getPosts', () => {
 
   it('should apply correct skip and limit for page 2 with limit 10', async () => {
     const response = await request(app).get('/getPosts?page=2&limit=10')
-<<<<<<< HEAD
-=======
 
->>>>>>> 0147656d60d09627c88345f0c96c512de75e7a7f
     expect(response.status).toBe(200)
     expect(chain.skip).toHaveBeenCalledWith(10)
     expect(chain.limit).toHaveBeenCalledWith(10)
