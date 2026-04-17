@@ -2,7 +2,6 @@
   "compilerOptions": {
     "target": "esnext",
     "lib": ["ES2023"],
-    "module": "CommonJS",
     "module": "es2022",
     "moduleResolution": "node",
     "rootDir": "./src",

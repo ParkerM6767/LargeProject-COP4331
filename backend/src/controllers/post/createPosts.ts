@@ -5,6 +5,11 @@ import fs from 'fs'
 import path from 'path'
 import mongoose from 'mongoose'
 
+const staticImagePath = path.join(
+  import.meta.dirname,
+  '../../../public/images/posts'
+)
+
 // POST /
 export async function createPost (req: Request, res: Response) {
   try {
